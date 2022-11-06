@@ -10,10 +10,6 @@ CREATE TABLE People
 	PRIMARY KEY (person_id)
 );
 
-
-
-
-
 CREATE TABLE Room
 (
 	Floor                TINYINT UNSIGNED NOT NULL Default( 1 ),
