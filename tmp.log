@@ -1,0 +1,179 @@
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+(1698, "Access denied for user 'root'@'localhost'")
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-06 19:07:30.521791
+create database tmp;
+(1007, "Can't create database 'tmp'; database exists")
+Your call!
+
+# 2022-11-06 19:07:51.794015
+drop database tmp;
+Query OK, 0 rows affected
+Time: 0.121s
+
+# 2022-11-06 19:07:54.722210
+create database tmp;
+Query OK, 1 row affected
+Time: 0.030s
+
+# 2022-11-06 19:07:58.498595
+use tmp;
+You are now connected to database "tmp" as user "root"
+Time: 0.002s
+
+# 2022-11-06 19:08:09.708140
+source ./scheme.sql
+list index out of range
+
+# 2022-11-06 19:08:43.166371
+show tables;
++---------------+
+| Tables_in_tmp |
++---------------+
++---------------+
+0 rows in set
+Time: 0.021s
+
+# 2022-11-06 19:08:50.407463
+source ./scheme.sql
+list index out of range
+
+# 2022-11-06 19:11:43.163919
+quit
+Goodbye!
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-06 19:11:53.966424
+use tmp;
+You are now connected to database "tmp" as user "root"
+Time: 0.001s
+
+# 2022-11-06 19:11:59.690601
+source ./scheme.sql
+list index out of range
+
+# 2022-11-06 19:12:04.889628
+source ./scheme.sql;
+list index out of range
+
+# 2022-11-06 19:12:09.290019
+source scheme.sql
+list index out of range
+
+# 2022-11-06 19:12:13.528687
+source 'scheme.sql'
+[Errno 2] No such file or directory: "'scheme.sql'"
+Time: 0.000s
+
+# 2022-11-06 19:12:22.528514
+source ./scheme.sql
+list index out of range
+
+# 2022-11-06 19:13:22.770454
+source ./scheme.sql
+list index out of range
+
+# 2022-11-06 19:14:28.995419
+source ./scheme.sql
+list index out of range
+
+# 2022-11-06 19:14:57.124173
+source ./g1
+(1146, "Table 'tmp.People' doesn't exist")
+
+# 2022-11-06 19:15:03.177084
+source ./scheme.sql
+list index out of range
+
+# 2022-11-06 19:15:23.143506
+source ./scheme.sql
+Query OK, 0 rows affected
+Time: 0.286s
+(1824, "Failed to open the referenced table 'Room'")
+
+# 2022-11-06 19:17:31.266209
+source ./scheme.sql
+list index out of range
+
+# 2022-11-06 19:17:50.476467
+source ./scheme.sql
+list index out of range
+
+# 2022-11-06 19:17:58.869946
+source ./scheme.sql
+list index out of range
+
+# 2022-11-06 19:18:37.040048
+quit
+Goodbye!
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-06 19:20:06.971432
+create database tmp;
+Query OK, 1 row affected
+Time: 0.010s
+
+# 2022-11-06 19:20:12.107155
+use tmp;
+You are now connected to database "tmp" as user "root"
+Time: 0.001s
+
+# 2022-11-06 19:20:17.596489
+source ./scheme.sql
+list index out of range
+
+# 2022-11-06 19:20:24.132293
+show tables;
++---------------+
+| Tables_in_tmp |
++---------------+
++---------------+
+0 rows in set
+Time: 0.032s
+
+# 2022-11-06 19:25:00.931676
+\T fancy_grid
+Changed table format to fancy_grid
+Time: 0.000s
+
+# 2022-11-06 19:25:03.946723
+source ./scheme.sql
+list index out of range
+
+# 2022-11-06 19:25:20.395008
+\T terminal_tables
+Table format terminal_tables not recognized. Allowed formats:
+	vertical
+	csv
+	csv-tab
+	mediawiki
+	html
+	latex
+	latex_booktabs
+	textile
+	moinmoin
+	jira
+	ascii
+	plain
+	simple
+	minimal
+	grid
+	fancy_grid
+	pipe
+	orgtbl
+	psql
+	psql_unicode
+	rst
+	github
+	double
+	tsv
+	sql-insert
+	sql-update
+	sql-update-1
+	sql-update-2
+Time: 0.000s
+
+# 2022-11-06 19:26:57.606944
+quit
+Goodbye!
