@@ -37,15 +37,3 @@ CREATE TABLE HotelOrder
 	FOREIGN KEY ( person_id ) REFERENCES People( person_id ),
 	FOREIGN KEY ( room_id ) REFERENCES Room( room_id )
 );
-
-
-
-
-
--- ALTER TABLE HotelOrder
--- ADD FOREIGN KEY R_8 (person_id) REFERENCES People (person_id);
-
-
-
--- ALTER TABLE HotelOrder
--- ADD FOREIGN KEY R_9 (room_id) REFERENCES Room (room_id);
