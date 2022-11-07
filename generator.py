@@ -57,7 +57,7 @@ if __name__ == "__main__":
             cur_room_num = min( random.randint( 1, max_room_num - room_num ), max_room_num // 4 )
             for i in range( cur_room_num ):
                 output_file.write(
-                    f"({floor}, {i}, "
+                    f"({floor}, {i + 1}, "
                     + f"'{random.choice( room_class )}', {random.randint( 1, 4 )})"
                 )
                 if i != cur_room_num - 1:
