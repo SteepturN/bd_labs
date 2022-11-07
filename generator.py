@@ -15,7 +15,7 @@ if __name__ == "__main__":
     faker = Faker()
     hotel_order_num = 20
     people_num = 20
-    room_num = 20
+    max_room_num = 20
     people_names = ['Джотаро', 'Джозеф', 'Джонатан', 'Джорно', 'Джолин', 'Даниил', 'Константин', 'Илья', 'Сайтама', 'Шигео'];
     people_second_names = ['Токийский', 'Куджо', 'Мухаммед', 'Джостар']
     sexes = ['Not known', 'Male', 'Female', 'Not applicable']
@@ -47,13 +47,22 @@ if __name__ == "__main__":
             if i != people_num - 1:
                 output_file.write(",\n")
         output_file.write( ";\ninsert into Room ( Floor, `Number`, `Class`, Capacity ) values\n" )
-        for i in range( room_num ):
-            output_file.write(
-                f"({random.randint( 1, 20 )}, {random.randint( 1, 20 )}, "
-                + f"'{random.choice( room_class )}', {random.randint( 1, 4 )})"
-            )
-            if i != room_num - 1:
+
+        floor = 0
+        room_num = 0
+        while room_num < max_room_num:
+            if floor != 0:
                 output_file.write(",\n")
+            floor += 1
+            cur_room_num = min( random.randint( 1, max_room_num - room_num ), max_room_num // 4 )
+            for i in range( cur_room_num ):
+                output_file.write(
+                    f"({floor}, {i}, "
+                    + f"'{random.choice( room_class )}', {random.randint( 1, 4 )})"
+                )
+                if i != cur_room_num - 1:
+                    output_file.write(",\n")
+            room_num += cur_room_num
         output_file.write(";\ninsert into HotelOrder ( DateInfo, Price, Stars, person_id, room_id ) values\n")
         for i in range( hotel_order_num ):
             output_file.write(
