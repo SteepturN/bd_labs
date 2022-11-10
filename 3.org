@@ -1,0 +1,75 @@
+#+title: с использованием групповых (агрегирующих) функций
+
+1. Назначение запроса: найти максимальную цену заказа
+#+BEGIN_SRC sql
+
+# 2022-11-08 14:41:03.339640
+select MAX(`Price`) from `HotelOrder`
++--------------+
+| MAX(`Price`) |
++--------------+
+| 479318       |
++--------------+
+1 row in set
+Time: 0.068s
+
+#+END_SRC
+
+2. Назначение запроса: найти полученные деньги по результатами данных заказов
+
+#+BEGIN_SRC sql
+# 2022-11-08 14:41:38.391207
+select sum(`Price`) from `HotelOrder`
++--------------+
+| sum(`Price`) |
++--------------+
+| 5385716      |
++--------------+
+1 row in set
+Time: 0.015s
+
+#+END_SRC
+
+3. Назначение запроса: найти среднюю стоимость заказа
+
+#+BEGIN_SRC sql
+# 2022-11-08 14:43:41.647339
+select avg(`Price`) as `avg price` from `HotelOrder`
++-------------+
+| avg price   |
++-------------+
+| 269285.8000 |
++-------------+
+1 row in set
+Time: 0.008s
+#+END_SRC
+
+4. Назначение запроса: найти количество vip номеров
+
+#+BEGIN_SRC sql
+
+# 2022-11-08 14:46:01.356869
+select count(*) as `vip rooms count` from `Room` where `Class` = 'vip'
++-----------------+
+| vip rooms count |
++-----------------+
+| 1               |
++-----------------+
+1 row in set
+Time: 0.017s
+#+END_SRC
+
+5. Назначение запроса: найти количество standart номеров
+
+#+BEGIN_SRC sql
+
+# 2022-11-08 14:46:14.352622
+select count(*) as `standart rooms count` from `Room` where `Class` = 'standart'
++----------------------+
+| standart rooms count |
++----------------------+
+| 9                    |
++----------------------+
+1 row in set
+Time: 0.012s
+#+END_SRC

@@ -1,0 +1,571 @@
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-08 17:21:47.332825
+use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.001s
+
+# 2022-11-08 17:33:13.894594
+select `People`.`Full_name` as 'vip', `HotelOrder`.`Price` as 'vip price'
+from `People` inner join
+(`HotelOrder` inner join ( select `Room`.room_id from `Room` where `Class` = 'vip' ) 
+on `HotelOrder`.room_id = `Room`.room_id )
+on `People`.person_id = `HotelOrder`.person_id;
+(1248, 'Every derived table must have its own alias')
+
+# 2022-11-08 17:33:41.033414
+select `People`.`Full_name` as 'vip', `HotelOrder`.`Price` as 'vip price'
+from `People` inner join
+(`HotelOrder` inner join ( select `Room`.room_id as 'room_id' from `Room` where `Class` = 'vip' ) 
+on `HotelOrder`.room_id = `Room`.room_id )
+on `People`.person_id = `HotelOrder`.person_id;
+(1248, 'Every derived table must have its own alias')
+
+# 2022-11-08 17:35:32.447490
+select `People`.`Full_name` as 'vip', `HotelOrder`.`Price` as 'vip price'
+from `People` inner join
+(`HotelOrder` inner join ( select `Room`.room_id from `Room` where `Class` = 'vip' as `Room` ) 
+on `HotelOrder`.room_id = `Room`.room_id )
+on `People`.person_id = `HotelOrder`.person_id;
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'as `Room` ) \non `HotelOrder`.room_id = `Room`.room_id )\non `People`.person_id = ' at line 3")
+
+# 2022-11-08 17:36:42.227344
+select `People`.`Full_name` as 'vip', `HotelOrder`.`Price` as 'vip price'
+from `People` inner join
+(`HotelOrder` inner join ( select `Room`.room_id from `Room` where `Class` = 'vip' as `_Room` ) 
+on `HotelOrder`.room_id = `_Room`.room_id )
+on `People`.person_id = `HotelOrder`.person_id;
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'as `_Room` ) \non `HotelOrder`.room_id = `_Room`.room_id )\non `People`.person_id ' at line 3")
+
+# 2022-11-08 17:39:07.816197
+select `People`.`Full_name` as 'vip', `HotelOrder`.`Price` as 'vip price'
+from (`People` inner join
+(`HotelOrder` inner join ( select `Room`.room_id from `Room` where `Class` = 'vip' as _Room ) 
+on `HotelOrder`.room_id = `_Room`.room_id )
+on `People`.person_id = `HotelOrder`.person_id);
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'as _Room ) \non `HotelOrder`.room_id = `_Room`.room_id )\non `People`.person_id = ' at line 3")
+
+# 2022-11-08 17:39:31.517241
+select `People`.`Full_name` as 'vip', `HotelOrder`.`Price` as 'vip price'
+from (`People` inner join
+(`HotelOrder` inner join ( select `Room`.room_id from `Room` where `Class` = 'vip' as Room1 ) 
+on `HotelOrder`.room_id = `_Room`.room_id )
+on `People`.person_id = `HotelOrder`.person_id);
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'as Room1 ) \non `HotelOrder`.room_id = `_Room`.room_id )\non `People`.person_id = ' at line 3")
+
+# 2022-11-08 17:40:11.103345
+select `People`.`Full_name` as 'vip', `HotelOrder`.`Price` as 'vip price'
+from (`People` inner join `HotelOrder`
+on `People`.person_id = `HotelOrder`.person_id);
++-------------------+-----------+
+| vip               | vip price |
++-------------------+-----------+
+| Джолин Агацума    | 208037    |
+| Роуз Геноза       | 467315    |
+| Джонатан Макинами | 348189    |
+| Дива Почитта      | 66062     |
+| Фэй Джостар       | 198893    |
+| Роуз Ленгли       | 288016    |
+| Даниил Куджо      | 186019    |
+| Жоржи Мухаммед    | 14165     |
+| Мива Макинами     | 4371      |
+| Джонатан Ленгли   | 356811    |
+| Дива Агацума      | 451559    |
+| Жоржи Мухаммед    | 451308    |
+| Даниил Куджо      | 278408    |
+| Джонатан Ленгли   | 456358    |
+| Даниил Куджо      | 479318    |
+| Кира Мухаммед     | 467683    |
+| Жоржи Мухаммед    | 212341    |
+| Фэй Джостар       | 364377    |
+| Дива Агацума      | 73321     |
+| Роуз Ленгли       | 13165     |
++-------------------+-----------+
+20 rows in set
+Time: 0.024s
+
+# 2022-11-08 17:41:41.283197
+select `People`.`Full_name` as 'vip price'
+from ( select * from `People` where `Age` > 18  );
+(1248, 'Every derived table must have its own alias')
+
+# 2022-11-08 17:41:50.880007
+select `People`.`Full_name` as 'vip price'
+from ( select * from `People` where `Age` > 18 as abc );
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'as abc )' at line 2")
+
+# 2022-11-08 17:43:08.922289
+select `People`.`Full_name` as 'vip price'
+from ( select * from `People` where `Age` > 18 ) as abc;
+(1054, "Unknown column 'People.Full_name' in 'field list'")
+
+# 2022-11-08 17:43:18.993528
+select `People`.`Full_name` as 'vip price'
+from ( select * from `People` where `Age` > 18 ) as People;
++-------------------+
+| vip price         |
++-------------------+
+| Мива Макинами     |
+| Кира Мухаммед     |
+| Синдзи Почитта    |
+| Джолин Лайт       |
+| Жоржи Мухаммед    |
+| Даниил Куджо      |
+| Фэй Джостар       |
+| Роуз Геноза       |
+| Илья Лайт         |
+| Константин Амане  |
+| Дива Агацума      |
+| Джонатан Макинами |
+| Джолин Агацума    |
+| Дива Почитта      |
+| Илья Амане        |
+| Джонатан Ленгли   |
++-------------------+
+16 rows in set
+Time: 0.027s
+
+# 2022-11-08 17:43:58.816338
+select `People`.`Full_name` as 'vip', `HotelOrder`.`Price` as 'vip price'
+from (`People` inner join
+(`HotelOrder` inner join ( select `Room`.room_id from `Room` where `Class` = 'vip' ) as Room 
+on `HotelOrder`.room_id = `_Room`.room_id )
+on `People`.person_id = `HotelOrder`.person_id);
+(1054, "Unknown column '_Room.room_id' in 'on clause'")
+
+# 2022-11-08 17:44:06.927839
+select `People`.`Full_name` as 'vip', `HotelOrder`.`Price` as 'vip price'
+from (`People` inner join
+(`HotelOrder` inner join ( select `Room`.room_id from `Room` where `Class` = 'vip' ) as Room 
+on `HotelOrder`.room_id = `Room`.room_id )
+on `People`.person_id = `HotelOrder`.person_id);
++--------------+-----------+
+| vip          | vip price |
++--------------+-----------+
+| Даниил Куджо | 479318    |
++--------------+-----------+
+1 row in set
+Time: 0.019s
+
+# 2022-11-08 17:48:29.349903
+select `People`.`Full_name` as 'person', `HotelOrder`.`order_id` as 'order_id'
+from `People` left join `HotelOrder` on `People`.person_id = `HotelOrder`.person_id;
++-------------------+----------+
+| person            | order_id |
++-------------------+----------+
+| Мива Макинами     | 9        |
+| Кира Мухаммед     | 16       |
+| Синдзи Почитта    | <null>   |
+| Джолин Лайт       | <null>   |
+| Джорно Йошикаге   | <null>   |
+| Жоржи Мухаммед    | 8        |
+| Жоржи Мухаммед    | 12       |
+| Жоржи Мухаммед    | 17       |
+| Даниил Куджо      | 7        |
+| Даниил Куджо      | 13       |
+| Даниил Куджо      | 15       |
+| Фэй Джостар       | 5        |
+| Фэй Джостар       | 18       |
+| Роуз Геноза       | 2        |
+| Джозеф Джостар    | <null>   |
+| Илья Лайт         | <null>   |
+| Константин Амане  | <null>   |
+| Дива Агацума      | 11       |
+| Дива Агацума      | 19       |
+| Джонатан Макинами | 3        |
+| Джонатан Почитта  | <null>   |
+| Роуз Ленгли       | 6        |
+| Роуз Ленгли       | 20       |
+| Джолин Агацума    | 1        |
+| Дива Почитта      | 4        |
+| Илья Амане        | <null>   |
+| Джонатан Ленгли   | 10       |
+| Джонатан Ленгли   | 14       |
++-------------------+----------+
+28 rows in set
+Time: 0.023s
+
+# 2022-11-08 17:49:52.163105
+select `People`.`Full_name` as 'person', `People`.`passport`, `HotelOrder`.`order_id` as 'order_id'
+from `People` left join `HotelOrder` on `People`.person_id = `HotelOrder`.person_id;
++-------------------+------------+----------+
+| person            | passport   | order_id |
++-------------------+------------+----------+
+| Мива Макинами     | 7818478233 | 9        |
+| Кира Мухаммед     | 2702162558 | 16       |
+| Синдзи Почитта    | 1713007159 | <null>   |
+| Джолин Лайт       | 5955587707 | <null>   |
+| Джорно Йошикаге   | 3604628488 | <null>   |
+| Жоржи Мухаммед    | 7434294503 | 8        |
+| Жоржи Мухаммед    | 7434294503 | 12       |
+| Жоржи Мухаммед    | 7434294503 | 17       |
+| Даниил Куджо      | 1217562659 | 7        |
+| Даниил Куджо      | 1217562659 | 13       |
+| Даниил Куджо      | 1217562659 | 15       |
+| Фэй Джостар       | 8359314123 | 5        |
+| Фэй Джостар       | 8359314123 | 18       |
+| Роуз Геноза       | 3218876729 | 2        |
+| Джозеф Джостар    | 5720607731 | <null>   |
+| Илья Лайт         | 9773355810 | <null>   |
+| Константин Амане  | 2616906135 | <null>   |
+| Дива Агацума      | 8467356710 | 11       |
+| Дива Агацума      | 8467356710 | 19       |
+| Джонатан Макинами | 1640823282 | 3        |
+| Джонатан Почитта  | 2403008459 | <null>   |
+| Роуз Ленгли       | 7478332364 | 6        |
+| Роуз Ленгли       | 7478332364 | 20       |
+| Джолин Агацума    | 4593159892 | 1        |
+| Дива Почитта      | 1529276322 | 4        |
+| Илья Амане        | 4097248329 | <null>   |
+| Джонатан Ленгли   | 7076427086 | 10       |
+| Джонатан Ленгли   | 7076427086 | 14       |
++-------------------+------------+----------+
+28 rows in set
+Time: 0.022s
+
+# 2022-11-08 17:51:31.667122
+select * from (select `People`.`Full_name` as 'person', `People`.`passport`, `HotelOrder`.`order_id` as 'order_id'
+from `People` left join `HotelOrder` on `People`.person_id = `HotelOrder`.person_id) as `consumers` where `order_id` <=> null;
++------------------+------------+----------+
+| person           | passport   | order_id |
++------------------+------------+----------+
+| Синдзи Почитта   | 1713007159 | <null>   |
+| Джолин Лайт      | 5955587707 | <null>   |
+| Джорно Йошикаге  | 3604628488 | <null>   |
+| Джозеф Джостар   | 5720607731 | <null>   |
+| Илья Лайт        | 9773355810 | <null>   |
+| Константин Амане | 2616906135 | <null>   |
+| Джонатан Почитта | 2403008459 | <null>   |
+| Илья Амане       | 4097248329 | <null>   |
++------------------+------------+----------+
+8 rows in set
+Time: 0.013s
+
+# 2022-11-08 17:59:09.440700
+select column from `Room`
+;
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'column from `Room`' at line 1")
+
+# 2022-11-08 17:59:12.450705
+select column from `Room`;
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'column from `Room`' at line 1")
+
+# 2022-11-08 17:59:20.282899
+select `column` from `Room`;
+(1054, "Unknown column 'column' in 'field list'")
+
+# 2022-11-08 17:59:31.766840
+show column from `Room`;
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'column from `Room`' at line 1")
+
+# 2022-11-08 17:59:35.565117
+show column`Room`;
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'column`Room`' at line 1")
+
+# 2022-11-08 18:00:12.652101
+show columns from `People`;
++-----------+-----------------------------------------------------------------------------------+------+-----+---------+----------------+
+| Field     | Type                                                                              | Null | Key | Default | Extra          |
++-----------+-----------------------------------------------------------------------------------+------+-----+---------+----------------+
+| Full_name | char(128)                                                                         | NO   |     | <null>  |                |
+| Age       | tinyint unsigned                                                                  | NO   |     | <null>  |                |
+| Passport  | char(10)                                                                          | NO   |     | <null>  |                |
+| Sex       | enum('Not known','Male','Female','Not applicable','helicopter','deer','kostyaan') | NO   |     | <null>  |                |
+| person_id | int unsigned                                                                      | NO   | PRI | <null>  | auto_increment |
++-----------+-----------------------------------------------------------------------------------+------+-----+---------+----------------+
+5 rows in set
+Time: 0.014s
+
+# 2022-11-08 18:00:23.946076
+show columns from  `Room`;
++----------+-----------------------------------+------+-----+----------------------+-------------------+
+| Field    | Type                              | Null | Key | Default              | Extra             |
++----------+-----------------------------------+------+-----+----------------------+-------------------+
+| Floor    | tinyint unsigned                  | NO   |     | 1                    | DEFAULT_GENERATED |
+| Number   | tinyint unsigned                  | NO   |     | 1                    | DEFAULT_GENERATED |
+| Class    | enum('vip','standart','half vip') | NO   |     | _utf8mb3\'standart\' | DEFAULT_GENERATED |
+| Capacity | tinyint unsigned                  | NO   |     | 1                    | DEFAULT_GENERATED |
+| room_id  | int unsigned                      | NO   | PRI | <null>               | auto_increment    |
++----------+-----------------------------------+------+-----+----------------------+-------------------+
+5 rows in set
+Time: 0.015s
+
+# 2022-11-08 18:03:26.196926
+select `Room`.`Floor`, `Room`.`Number`, `HotelOrder`.`Price` from `Room` right join `HotelOrder` on `Room`.room_id = `HotelOrder`.room_id;
++-------+--------+--------+
+| Floor | Number | Price  |
++-------+--------+--------+
+| 6     | 1      | 208037 |
+| 1     | 1      | 467315 |
+| 3     | 2      | 348189 |
+| 5     | 1      | 66062  |
+| 1     | 3      | 198893 |
+| 3     | 3      | 288016 |
+| 4     | 2      | 186019 |
+| 1     | 4      | 14165  |
+| 2     | 3      | 4371   |
+| 1     | 3      | 356811 |
+| 4     | 1      | 451559 |
+| 5     | 1      | 451308 |
+| 2     | 5      | 278408 |
+| 4     | 3      | 456358 |
+| 3     | 1      | 479318 |
+| 2     | 4      | 467683 |
+| 4     | 4      | 212341 |
+| 1     | 4      | 364377 |
+| 6     | 1      | 73321  |
+| 5     | 1      | 13165  |
++-------+--------+--------+
+20 rows in set
+Time: 0.014s
+
+# 2022-11-08 18:04:30.356607
+select `Room`.`Floor`, `Room`.`Number`, `HotelOrder`.`Price` from `Room` right join `HotelOrder` on `Room`.room_id = `HotelOrder`.room_id order by `Floor`, `Number`;
++-------+--------+--------+
+| Floor | Number | Price  |
++-------+--------+--------+
+| 1     | 1      | 467315 |
+| 1     | 3      | 198893 |
+| 1     | 3      | 356811 |
+| 1     | 4      | 364377 |
+| 1     | 4      | 14165  |
+| 2     | 3      | 4371   |
+| 2     | 4      | 467683 |
+| 2     | 5      | 278408 |
+| 3     | 1      | 479318 |
+| 3     | 2      | 348189 |
+| 3     | 3      | 288016 |
+| 4     | 1      | 451559 |
+| 4     | 2      | 186019 |
+| 4     | 3      | 456358 |
+| 4     | 4      | 212341 |
+| 5     | 1      | 451308 |
+| 5     | 1      | 66062  |
+| 5     | 1      | 13165  |
+| 6     | 1      | 208037 |
+| 6     | 1      | 73321  |
++-------+--------+--------+
+20 rows in set
+Time: 0.016s
+
+# 2022-11-08 18:04:49.977408
+select `Room`.`Floor`, `Room`.`Number`, `HotelOrder`.`Price` from `Room` left join `HotelOrder` on `Room`.room_id = `HotelOrder`.room_id order by `Floor`, `Number`;
++-------+--------+--------+
+| Floor | Number | Price  |
++-------+--------+--------+
+| 1     | 1      | 467315 |
+| 1     | 2      | <null> |
+| 1     | 3      | 198893 |
+| 1     | 3      | 356811 |
+| 1     | 4      | 14165  |
+| 1     | 4      | 364377 |
+| 2     | 1      | <null> |
+| 2     | 2      | <null> |
+| 2     | 3      | 4371   |
+| 2     | 4      | 467683 |
+| 2     | 5      | 278408 |
+| 3     | 1      | 479318 |
+| 3     | 2      | 348189 |
+| 3     | 3      | 288016 |
+| 3     | 4      | <null> |
+| 3     | 5      | <null> |
+| 4     | 1      | 451559 |
+| 4     | 2      | 186019 |
+| 4     | 3      | 456358 |
+| 4     | 4      | 212341 |
+| 5     | 1      | 66062  |
+| 5     | 1      | 451308 |
+| 5     | 1      | 13165  |
+| 6     | 1      | 208037 |
+| 6     | 1      | 73321  |
++-------+--------+--------+
+25 rows in set
+Time: 0.013s
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-08 21:44:48.036883
+use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.001s
+
+# 2022-11-08 21:52:51.368090
+select * from `People` p
+left join `HotelOrder` h on p.person_id = h.person_id
+
+union
+
+select * from `People` p1 left join `HotelOrder` h1 on p1.person_id = h1.person_id;
++-------------------+-----+------------+----------------+-----------+------------+--------+--------+-----------+---------+----------+
+| Full_name         | Age | Passport   | Sex            | person_id | DateInfo   | Price  | Stars  | person_id | room_id | order_id |
++-------------------+-----+------------+----------------+-----------+------------+--------+--------+-----------+---------+----------+
+| Мива Макинами     | 56  | 7818478233 | Female         | 1         | 2005-04-14 | 4371   | 3      | 1         | 7       | 9        |
+| Кира Мухаммед     | 90  | 2702162558 | Not known      | 2         | 1982-05-13 | 467683 | 5      | 2         | 8       | 16       |
+| Синдзи Почитта    | 47  | 1713007159 | Not applicable | 3         | <null>     | <null> | <null> | <null>    | <null>  | <null>   |
+| Джолин Лайт       | 42  | 5955587707 | Male           | 4         | <null>     | <null> | <null> | <null>    | <null>  | <null>   |
+| Джорно Йошикаге   | 4   | 3604628488 | Male           | 5         | <null>     | <null> | <null> | <null>    | <null>  | <null>   |
+| Жоржи Мухаммед    | 47  | 7434294503 | Not known      | 6         | 1993-06-29 | 14165  | 3      | 6         | 4       | 8        |
+| Жоржи Мухаммед    | 47  | 7434294503 | Not known      | 6         | 1987-09-20 | 451308 | 4      | 6         | 19      | 12       |
+| Жоржи Мухаммед    | 47  | 7434294503 | Not known      | 6         | 1979-04-23 | 212341 | 1      | 6         | 18      | 17       |
+| Даниил Куджо      | 22  | 1217562659 | Not applicable | 7         | 2000-05-29 | 186019 | 4      | 7         | 16      | 7        |
+| Даниил Куджо      | 22  | 1217562659 | Not applicable | 7         | 2007-03-14 | 278408 | 0      | 7         | 9       | 13       |
+| Даниил Куджо      | 22  | 1217562659 | Not applicable | 7         | 1992-01-13 | 479318 | 2      | 7         | 10      | 15       |
+| Фэй Джостар       | 28  | 8359314123 | Female         | 8         | 2007-08-24 | 198893 | 4      | 8         | 3       | 5        |
+| Фэй Джостар       | 28  | 8359314123 | Female         | 8         | 2014-12-07 | 364377 | 4      | 8         | 4       | 18       |
+| Роуз Геноза       | 86  | 3218876729 | Not known      | 9         | 2001-06-22 | 467315 | 1      | 9         | 1       | 2        |
+| Джозеф Джостар    | 8   | 5720607731 | Not known      | 10        | <null>     | <null> | <null> | <null>    | <null>  | <null>   |
+| Илья Лайт         | 64  | 9773355810 | Male           | 11        | <null>     | <null> | <null> | <null>    | <null>  | <null>   |
+| Константин Амане  | 65  | 2616906135 | Not known      | 12        | <null>     | <null> | <null> | <null>    | <null>  | <null>   |
+| Дива Агацума      | 79  | 8467356710 | Female         | 13        | 2012-07-21 | 451559 | 5      | 13        | 15      | 11       |
+| Дива Агацума      | 79  | 8467356710 | Female         | 13        | 1989-11-25 | 73321  | 0      | 13        | 20      | 19       |
+| Джонатан Макинами | 62  | 1640823282 | Not known      | 14        | 1975-08-11 | 348189 | 3      | 14        | 11      | 3        |
+| Джонатан Почитта  | 10  | 2403008459 | Not applicable | 15        | <null>     | <null> | <null> | <null>    | <null>  | <null>   |
+| Роуз Ленгли       | 1   | 7478332364 | Not known      | 16        | 2005-12-02 | 288016 | 5      | 16        | 12      | 6        |
+| Роуз Ленгли       | 1   | 7478332364 | Not known      | 16        | 2009-02-03 | 13165  | 2      | 16        | 19      | 20       |
+| Джолин Агацума    | 66  | 4593159892 | Not known      | 17        | 1999-01-26 | 208037 | 0      | 17        | 20      | 1        |
+| Дива Почитта      | 75  | 1529276322 | Not known      | 18        | 1990-06-22 | 66062  | 1      | 18        | 19      | 4        |
+| Илья Амане        | 20  | 4097248329 | Not known      | 19        | <null>     | <null> | <null> | <null>    | <null>  | <null>   |
+| Джонатан Ленгли   | 91  | 7076427086 | Not applicable | 20        | 1997-03-21 | 356811 | 3      | 20        | 3       | 10       |
+| Джонатан Ленгли   | 91  | 7076427086 | Not applicable | 20        | 1982-05-01 | 456358 | 4      | 20        | 17      | 14       |
++-------------------+-----+------------+----------------+-----------+------------+--------+--------+-----------+---------+----------+
+28 rows in set
+Time: 0.098s
+
+# 2022-11-08 21:56:56.011289
+select p.`Full_name`, r.`Number`, r.`Floor` from `People` p
+left join 
+(`HotelOrder` h right join `Room` r on h.room_id = r.room_id)
+on p.person_id = h.person_id;
++-------------------+--------+--------+
+| Full_name         | Number | Floor  |
++-------------------+--------+--------+
+| Мива Макинами     | 3      | 2      |
+| Кира Мухаммед     | 4      | 2      |
+| Синдзи Почитта    | <null> | <null> |
+| Джолин Лайт       | <null> | <null> |
+| Джорно Йошикаге   | <null> | <null> |
+| Жоржи Мухаммед    | 4      | 1      |
+| Жоржи Мухаммед    | 1      | 5      |
+| Жоржи Мухаммед    | 4      | 4      |
+| Даниил Куджо      | 2      | 4      |
+| Даниил Куджо      | 5      | 2      |
+| Даниил Куджо      | 1      | 3      |
+| Фэй Джостар       | 3      | 1      |
+| Фэй Джостар       | 4      | 1      |
+| Роуз Геноза       | 1      | 1      |
+| Джозеф Джостар    | <null> | <null> |
+| Илья Лайт         | <null> | <null> |
+| Константин Амане  | <null> | <null> |
+| Дива Агацума      | 1      | 4      |
+| Дива Агацума      | 1      | 6      |
+| Джонатан Макинами | 2      | 3      |
+| Джонатан Почитта  | <null> | <null> |
+| Роуз Ленгли       | 3      | 3      |
+| Роуз Ленгли       | 1      | 5      |
+| Джолин Агацума    | 1      | 6      |
+| Дива Почитта      | 1      | 5      |
+| Илья Амане        | <null> | <null> |
+| Джонатан Ленгли   | 3      | 1      |
+| Джонатан Ленгли   | 3      | 4      |
++-------------------+--------+--------+
+28 rows in set
+Time: 0.026s
+
+# 2022-11-08 21:57:46.751844
+select p.`Full_name`, r.`Number`, r.`Floor` from `People` p
+inner join 
+(`HotelOrder` h inner join `Room` r on h.room_id = r.room_id)
+on p.person_id = h.person_id;
++-------------------+--------+-------+
+| Full_name         | Number | Floor |
++-------------------+--------+-------+
+| Джолин Агацума    | 1      | 6     |
+| Роуз Геноза       | 1      | 1     |
+| Джонатан Макинами | 2      | 3     |
+| Дива Почитта      | 1      | 5     |
+| Фэй Джостар       | 3      | 1     |
+| Роуз Ленгли       | 3      | 3     |
+| Даниил Куджо      | 2      | 4     |
+| Жоржи Мухаммед    | 4      | 1     |
+| Мива Макинами     | 3      | 2     |
+| Джонатан Ленгли   | 3      | 1     |
+| Дива Агацума      | 1      | 4     |
+| Жоржи Мухаммед    | 1      | 5     |
+| Даниил Куджо      | 5      | 2     |
+| Джонатан Ленгли   | 3      | 4     |
+| Даниил Куджо      | 1      | 3     |
+| Кира Мухаммед     | 4      | 2     |
+| Жоржи Мухаммед    | 4      | 4     |
+| Фэй Джостар       | 4      | 1     |
+| Дива Агацума      | 1      | 6     |
+| Роуз Ленгли       | 1      | 5     |
++-------------------+--------+-------+
+20 rows in set
+Time: 0.015s
+
+# 2022-11-08 21:58:42.366367
+select p.`Full_name`, r.`Number`, r.`Floor` from `People` p
+inner join 
+(`HotelOrder` h inner join `Room` r on h.room_id = r.room_id)
+on p.person_id = h.person_id order by p.`Full_name`;
++-------------------+--------+-------+
+| Full_name         | Number | Floor |
++-------------------+--------+-------+
+| Даниил Куджо      | 2      | 4     |
+| Даниил Куджо      | 5      | 2     |
+| Даниил Куджо      | 1      | 3     |
+| Джолин Агацума    | 1      | 6     |
+| Джонатан Ленгли   | 3      | 1     |
+| Джонатан Ленгли   | 3      | 4     |
+| Джонатан Макинами | 2      | 3     |
+| Дива Агацума      | 1      | 6     |
+| Дива Агацума      | 1      | 4     |
+| Дива Почитта      | 1      | 5     |
+| Жоржи Мухаммед    | 4      | 4     |
+| Жоржи Мухаммед    | 4      | 1     |
+| Жоржи Мухаммед    | 1      | 5     |
+| Кира Мухаммед     | 4      | 2     |
+| Мива Макинами     | 3      | 2     |
+| Роуз Геноза       | 1      | 1     |
+| Роуз Ленгли       | 3      | 3     |
+| Роуз Ленгли       | 1      | 5     |
+| Фэй Джостар       | 4      | 1     |
+| Фэй Джостар       | 3      | 1     |
++-------------------+--------+-------+
+20 rows in set
+Time: 0.031s
+
+# 2022-11-08 21:59:19.373717
+select p.`Full_name`, r.`Number`, r.`Floor` from `People` p
+inner join 
+(`HotelOrder` h inner join `Room` r on h.room_id = r.room_id)
+on p.person_id = h.person_id order by p.`Full_name`, r.`Floor`, r.`Number`;
++-------------------+--------+-------+
+| Full_name         | Number | Floor |
++-------------------+--------+-------+
+| Даниил Куджо      | 5      | 2     |
+| Даниил Куджо      | 1      | 3     |
+| Даниил Куджо      | 2      | 4     |
+| Джолин Агацума    | 1      | 6     |
+| Джонатан Ленгли   | 3      | 1     |
+| Джонатан Ленгли   | 3      | 4     |
+| Джонатан Макинами | 2      | 3     |
+| Дива Агацума      | 1      | 4     |
+| Дива Агацума      | 1      | 6     |
+| Дива Почитта      | 1      | 5     |
+| Жоржи Мухаммед    | 4      | 1     |
+| Жоржи Мухаммед    | 4      | 4     |
+| Жоржи Мухаммед    | 1      | 5     |
+| Кира Мухаммед     | 4      | 2     |
+| Мива Макинами     | 3      | 2     |
+| Роуз Геноза       | 1      | 1     |
+| Роуз Ленгли       | 3      | 3     |
+| Роуз Ленгли       | 1      | 5     |
+| Фэй Джостар       | 3      | 1     |
+| Фэй Джостар       | 4      | 1     |
++-------------------+--------+-------+
+20 rows in set
+Time: 0.020s
+
+# 2022-11-08 21:59:57.455951
+quit;
+Goodbye!

@@ -1,0 +1,334 @@
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+Password: 
+MySQL 8.0.31
+mycli 1.24.3
+Home: http://mycli.net
+Bug tracker: https://github.com/dbcli/mycli/issues
+Thanks to the contributor - Tyler Kuipers
+MySQL steep@(none):(none)> use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.001s
+MySQL steep@(none):labs> update  `People` set `Age` = `Age` + 1;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Reconnecting...
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 20 rows affected
+Time: 3.041s
+MySQL steep@(none):labs> update  `People` set `Age` = `Age` - 1;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 20 rows affected
+Time: 0.040s
+MySQL steep@(none):labs> quit;
+Goodbye!
+[1]+  Завершён        emacsclient -c -a 'emacs' 11.log
+steep@gg:~/education/instit/bd$ rm 13.log 
+steep@gg:~/education/instit/bd$ mycli -u steep -l 13.log
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+Password: 
+MySQL 8.0.31
+mycli 1.24.3
+Home: http://mycli.net
+Bug tracker: https://github.com/dbcli/mycli/issues
+Thanks to the contributor - Abirami P
+MySQL steep@(none):(none)> use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.001s
+MySQL steep@(none):labs> select `Age` from `People` order by `Age`;
++-----+
+| Age |
++-----+
+| 1   |
+| 4   |
+| 8   |
+| 10  |
+| 20  |
+| 22  |
+| 28  |
+| 42  |
+| 47  |
+| 47  |
+| 56  |
+| 62  |
+| 64  |
+| 65  |
+| 66  |
+| 75  |
+| 79  |
+| 86  |
+| 90  |
+| 91  |
++-----+
+20 rows in set
+Time: 0.022s
+MySQL steep@(none):labs> update `People` set `Age` = `Age` + 1;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 20 rows affected
+Time: 0.026s
+MySQL steep@(none):labs> select `Age` from `People` order by `Age`;
++-----+
+| Age |
++-----+
+| 2   |
+| 5   |
+| 9   |
+| 11  |
+| 21  |
+| 23  |
+| 29  |
+| 43  |
+| 48  |
+| 48  |
+| 57  |
+| 63  |
+| 65  |
+| 66  |
+| 67  |
+| 76  |
+| 80  |
+| 87  |
+| 91  |
+| 92  |
++-----+
+
+20 rows in set
+Time: 0.022s
+MySQL steep@(none):labs> update  `People` set `Age` = `Age` - 1;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 20 rows affected
+Time: 0.047s
+MySQL steep@(none):labs> create temporary table tmp (select * from `People`);
+Query OK, 20 rows affected
+Time: 0.003s
+MySQL steep@(none):labs> update  `People` set `Age` = `Age`*2;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): n
+Wise choice!
+MySQL steep@(none):labs> \#
+Auto-completion refresh started in the background.
+Time: 0.001s
+MySQL steep@(none):labs> update `tmp` set `Age` = `Age`*2;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 20 rows affected
+Time: 0.002s
+MySQL steep@(none):labs> select * from tmp;
++-------------------+-----+------------+----------------+-----------+
+| Full_name         | Age | Passport   | Sex            | person_id |
++-------------------+-----+------------+----------------+-----------+
+| Мива Макинами     | 112 | 7818478233 | Female         | 1         |
+| Кира Мухаммед     | 180 | 2702162558 | Not known      | 2         |
+| Синдзи Почитта    | 94  | 1713007159 | Not applicable | 3         |
+| Джолин Лайт       | 84  | 5955587707 | Male           | 4         |
+| Джорно Йошикаге   | 8   | 3604628488 | Male           | 5         |
+| Жоржи Мухаммед    | 94  | 7434294503 | Not known      | 6         |
+| Даниил Куджо      | 44  | 1217562659 | Not applicable | 7         |
+| Фэй Джостар       | 56  | 8359314123 | Female         | 8         |
+| Роуз Геноза       | 172 | 3218876729 | Not known      | 9         |
+| Джозеф Джостар    | 16  | 5720607731 | Not known      | 10        |
+| Илья Лайт         | 128 | 9773355810 | Male           | 11        |
+| Константин Амане  | 130 | 2616906135 | Not known      | 12        |
+| Дива Агацума      | 158 | 8467356710 | Female         | 13        |
+| Джонатан Макинами | 124 | 1640823282 | Not known      | 14        |
+| Джонатан Почитта  | 20  | 2403008459 | Not applicable | 15        |
+| Роуз Ленгли       | 2   | 7478332364 | Not known      | 16        |
+| Джолин Агацума    | 132 | 4593159892 | Not known      | 17        |
+| Дива Почитта      | 150 | 1529276322 | Not known      | 18        |
+| Илья Амане        | 40  | 4097248329 | Not known      | 19        |
+| Джонатан Ленгли   | 182 | 7076427086 | Not applicable | 20        |
++-------------------+-----+------------+----------------+-----------+
+
+20 rows in set
+Time: 0.023s
+MySQL steep@(none):labs> alter table `tmp` add `email` nchar(300) null;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+(1074, "Column length too big for column 'email' (max = 255); use BLOB or TEXT instead")
+MySQL steep@(none):labs> alter table `tmp` add `email` nchar(255) null;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 20 rows affected
+Time: 0.049s
+MySQL steep@(none):labs> update `tmp` set `email` = 'default@m.ru';
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 20 rows affected
+Time: 0.002s
+MySQL steep@(none):labs> alter table `People` add constraint `Passport` UNIQUE;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1")
+MySQL steep@(none):labs> alter table `People` add constraint UNIQUE(`Passport`);
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 0 rows affected
+Time: 0.202s
+MySQL steep@(none):labs> delete from `tmp` where `tmp`.`Age` < 18;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 3 rows affected
+Time: 0.001s
+MySQL steep@(none):labs> select age from tmp;
++-----+
+| age |
++-----+
+| 112 |
+| 180 |
+| 94  |
+| 84  |
+| 94  |
+| 44  |
+| 56  |
+| 172 |
+| 128 |
+| 130 |
+| 158 |
+| 124 |
+| 20  |
+| 132 |
+| 150 |
+| 40  |
+| 182 |
++-----+
+
+17 rows in set
+Time: 0.021s
+MySQL steep@(none):labs> delete from `tmp` where (
+You're about to run a destructive command.
+Do you want to proceed? (y/n): n
+Wise choice!
+MySQL steep@(none):labs> delete from `tmp` where 
+                      -> not exists( select * from `HotelOrder` where `tmp`.person_id = `HotelOrder`.person_id);
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 6 rows affected
+Time: 0.005s
+MySQL steep@(none):labs> select * from tmp;
++-------------------+-----+------------+----------------+-----------+--------------+
+| Full_name         | Age | Passport   | Sex            | person_id | email        |
++-------------------+-----+------------+----------------+-----------+--------------+
+| Мива Макинами     | 112 | 7818478233 | Female         | 1         | default@m.ru |
+| Кира Мухаммед     | 180 | 2702162558 | Not known      | 2         | default@m.ru |
+| Жоржи Мухаммед    | 94  | 7434294503 | Not known      | 6         | default@m.ru |
+| Даниил Куджо      | 44  | 1217562659 | Not applicable | 7         | default@m.ru |
+| Фэй Джостар       | 56  | 8359314123 | Female         | 8         | default@m.ru |
+| Роуз Геноза       | 172 | 3218876729 | Not known      | 9         | default@m.ru |
+| Дива Агацума      | 158 | 8467356710 | Female         | 13        | default@m.ru |
+| Джонатан Макинами | 124 | 1640823282 | Not known      | 14        | default@m.ru |
+| Джолин Агацума    | 132 | 4593159892 | Not known      | 17        | default@m.ru |
+| Дива Почитта      | 150 | 1529276322 | Not known      | 18        | default@m.ru |
+| Джонатан Ленгли   | 182 | 7076427086 | Not applicable | 20        | default@m.ru |
++-------------------+-----+------------+----------------+-----------+--------------+
+
+11 rows in set
+Time: 0.014s
+MySQL steep@(none):labs> show columns from tmp;
++-----------+-----------------------------------------------------------------------------------+------+-----+---------+-------+
+| Field     | Type                                                                              | Null | Key | Default | Extra |
++-----------+-----------------------------------------------------------------------------------+------+-----+---------+-------+
+| Full_name | char(128)                                                                         | NO   |     | <null>  | NULL  |
+| Age       | tinyint unsigned                                                                  | NO   |     | <null>  | NULL  |
+| Passport  | char(10)                                                                          | NO   |     | <null>  | NULL  |
+| Sex       | enum('Not known','Male','Female','Not applicable','helicopter','deer','kostyaan') | NO   |     | <null>  | NULL  |
+| person_id | int unsigned                                                                      | NO   |     | 0       | NULL  |
+| email     | char(255)                                                                         | YES  |     | <null>  | NULL  |
++-----------+-----------------------------------------------------------------------------------+------+-----+---------+-------+
+
+6 rows in set
+Time: 0.025s
+MySQL steep@(none):labs> show create table tmp;
++-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
++-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| tmp   | CREATE TEMPORARY TABLE `tmp` (\n  `Full_name` char(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,\n  `Age` tinyint unsigned NOT NULL,\n  `Passport` char(10) NOT NULL,\n  `Sex` enum('Not known','Male','Female','Not applicable','helicopter','deer','kostyaan') NOT NULL,\n  `person_id` int unsigned NOT NULL DEFAULT '0',\n  `email` char(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+1 row in set
+Time: 0.011s
+MySQL steep@(none):labs> alter table tmp drop constraint CHK_Passport;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+(3940, "Constraint 'CHK_Passport' does not exist.")
+MySQL steep@(none):labs> show create table `People`;
++--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table  | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
++--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| People | CREATE TABLE `People` (\n  `Full_name` char(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,\n  `Age` tinyint unsigned NOT NULL,\n  `Passport` char(10) NOT NULL,\n  `Sex` enum('Not known','Male','Female','Not applicable','helicopter','deer','kostyaan') NOT NULL,\n  `person_id` int unsigned NOT NULL AUTO_INCREMENT,\n  PRIMARY KEY (`person_id`),\n  UNIQUE KEY `Passport` (`Passport`),\n  CONSTRAINT `People_chk_1` CHECK ((`Age` < 200)),\n  CONSTRAINT `People_chk_2` CHECK (regexp_like(`Passport`,_utf8mb4'^[0-9]{5,}$'))\n) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+1 row in set
+Time: 0.010s
+MySQL steep@(none):labs> drop table tmp;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 0 rows affected
+Time: 0.001s
+MySQL steep@(none):labs> create temporary table tmp (show create table `People`);
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'show create table `People`)' at line 1")
+MySQL steep@(none):labs> create temporary table tmp show create table `People`;
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'show create table `People`' at line 1")
+MySQL steep@(none):labs> create temporary table tmp (select * from`People`);
+Query OK, 20 rows affected
+Time: 0.006s
+MySQL steep@(none):labs> alter table `tmp` add constraint UNIQUE(`Passport`);
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 20 rows affected
+Time: 0.003s
+MySQL steep@(none):labs> alter table tmp drop constraint UC_Passport;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+(3940, "Constraint 'UC_Passport' does not exist.")
+MySQL steep@(none):labs> show create table `tmp`;
++-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                             |
++-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| tmp   | CREATE TEMPORARY TABLE `tmp` (\n  `Full_name` char(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,\n  `Age` tinyint unsigned NOT NULL,\n  `Passport` char(10) NOT NULL,\n  `Sex` enum('Not known','Male','Female','Not applicable','helicopter','deer','kostyaan') NOT NULL,\n  `person_id` int unsigned NOT NULL DEFAULT '0',\n  UNIQUE KEY `Passport` (`Passport`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+1 row in set
+Time: 0.014s
+MySQL steep@(none):labs> alter table tmp drop index `Passport`;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 20 rows affected
+Time: 0.002s
+MySQL steep@(none):labs> show create table `tmp`;
++-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table                                                                                                                                                                                                                                                                                                                                                                                                      |
++-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| tmp   | CREATE TEMPORARY TABLE `tmp` (\n  `Full_name` char(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,\n  `Age` tinyint unsigned NOT NULL,\n  `Passport` char(10) NOT NULL,\n  `Sex` enum('Not known','Male','Female','Not applicable','helicopter','deer','kostyaan') NOT NULL,\n  `person_id` int unsigned NOT NULL DEFAULT '0'\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+1 row in set
+Time: 0.010s
+MySQL steep@(none):labs> alter table tmp drop column Age;
+You're about to run a destructive command.
+Do you want to proceed? (y/n): y
+Your call!
+Query OK, 20 rows affected
+Time: 0.002s
+MySQL steep@(none):labs> quit;
+Goodbye!

@@ -1,0 +1,193 @@
+#+title: с использованием операторов EXIST, ANY, ALL, SOME
+
+1. Назначение запроса: таблица с людьми, которые покупали номер
+
+#+BEGIN_SRC sql
+
+# 2022-11-08 22:19:24.185566
+select `People`.`Full_name` from `People` where exists( 
+select * from `HotelOrder` where `HotelOrder`.person_id = `People`.person_id );
++-------------------+
+| Full_name         |
++-------------------+
+| Мива Макинами     |
+| Кира Мухаммед     |
+| Жоржи Мухаммед    |
+| Даниил Куджо      |
+| Фэй Джостар       |
+| Роуз Геноза       |
+| Дива Агацума      |
+| Джонатан Макинами |
+| Роуз Ленгли       |
+| Джолин Агацума    |
+| Дива Почитта      |
+| Джонатан Ленгли   |
++-------------------+
+12 rows in set
+Time: 0.022s
+
+#+END_SRC
+
+2. Назначение запроса: таблица с людьми, которые не покупали ничего, но находятся в базе данных
+
+#+BEGIN_SRC sql
+
+# 2022-11-08 22:19:45.315320
+select `People`.`Full_name` from `People` where not exists( 
+select * from `HotelOrder` where `HotelOrder`.person_id = `People`.person_id );
++------------------+
+| Full_name        |
++------------------+
+| Синдзи Почитта   |
+| Джолин Лайт      |
+| Джорно Йошикаге  |
+| Джозеф Джостар   |
+| Илья Лайт        |
+| Константин Амане |
+| Джонатан Почитта |
+| Илья Амане       |
++------------------+
+8 rows in set
+Time: 0.010s
+
+#+END_SRC
+
+3. Назначение запроса: таблица с людьми, которые покупали half vip или vip номер
+
+#+BEGIN_SRC sql
+
+# 2022-11-08 22:33:49.872806
+select `People`.`Full_name` from `People` where
+exists(select * from `HotelOrder` where
+`HotelOrder`.person_id = `People`.person_id and
+exists(select * from `Room` where `Room`.room_id = `HotelOrder`.room_id
+and (`Room`.`Class` = 'vip' or `Room`.`Class` = 'half vip' ) ) );
++-------------------+
+| Full_name         |
++-------------------+
+| Мива Макинами     |
+| Кира Мухаммед     |
+| Даниил Куджо      |
+| Фэй Джостар       |
+| Джонатан Макинами |
+| Роуз Ленгли       |
+| Джонатан Ленгли   |
++-------------------+
+7 rows in set
+Time: 0.020s
+
+#+END_SRC
+
+4. Назначение запроса: таблица с людьми, которые купили хотя бы один номер и все номера, которые они купили являются standart номерами
+
+#+BEGIN_SRC sql
+
+# 2022-11-08 23:20:59.687065
+select `People`.`Full_name` from `People` where
+'standart' = all( select r.`Class` from ( select * from `HotelOrder` where 
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+and 
+
+exists(select r.`Class` from ( select * from `HotelOrder` where
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+order by `Full_name`;
++----------------+
+| Full_name      |
++----------------+
+| Джолин Агацума |
+| Дива Агацума   |
+| Дива Почитта   |
+| Жоржи Мухаммед |
+| Роуз Геноза    |
++----------------+
+5 rows in set
+Time: 0.021s
+
+#+END_SRC
+
+5. Назначение запроса: таблица с людьми, которые купили хотя бы один номер и один номер, который они купили является vip номером
+
+#+BEGIN_SRC sql
+
+# 2022-11-08 23:56:04.075347
+select `People`.`Full_name` from `People` where
+'vip' = any( select r.`Class` from ( select * from `HotelOrder` where 
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+and 
+
+exists(select r.`Class` from ( select * from `HotelOrder` where
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+order by `Full_name`;
++--------------+
+| Full_name    |
++--------------+
+| Даниил Куджо |
++--------------+
+1 row in set
+Time: 0.013s
+
+#+END_SRC
+
+6. Назначение запроса: таблица с номерами, которые были куплены когда-либо
+
+#+BEGIN_SRC sql
+
+# 2022-11-09 00:10:18.130898
+select `Room`.`Floor`, `Room`.`Number` from `Room` 
+where room_id = any( select `HotelOrder`.room_id from `HotelOrder`);
++-------+--------+
+| Floor | Number |
++-------+--------+
+| 1     | 1      |
+| 1     | 3      |
+| 1     | 4      |
+| 2     | 3      |
+| 2     | 4      |
+| 2     | 5      |
+| 3     | 1      |
+| 3     | 2      |
+| 3     | 3      |
+| 4     | 1      |
+| 4     | 2      |
+| 4     | 3      |
+| 4     | 4      |
+| 5     | 1      |
+| 6     | 1      |
++-------+--------+
+15 rows in set
+Time: 0.012s
+
+#+END_SRC
+
+7. Назначение запроса: таблица с номерами, которые никогда не были куплены
+
+#+BEGIN_SRC sql
+
+# 2022-11-09 00:10:30.911791
+select `Room`.`Floor`, `Room`.`Number` from `Room` 
+where not room_id = any( select `HotelOrder`.room_id from `HotelOrder`);
++-------+--------+
+| Floor | Number |
++-------+--------+
+| 1     | 2      |
+| 2     | 1      |
+| 2     | 2      |
+| 3     | 4      |
+| 3     | 5      |
++-------+--------+
+5 rows in set
+Time: 0.010s
+
+# 2022-11-09 00:10:53.082787
+quit;
+Goodbye!
+
+#+END_SRC

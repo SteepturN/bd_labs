@@ -1,0 +1,278 @@
+#+title: с использованием вложенных запросов
+
+1. Назначение запроса: создаём временную таблицу tmp с значениями столбцов Full_name, Age, Passport из таблицы People, увеличиваем возраст всех в таблице в 2 раза
+
+#+BEGIN_SRC sql
+
+# 2022-11-10 22:29:26.207321
+create temporary table tmp (select `Full_name`, `Age`, `Passport` from `People`);
+Query OK, 20 rows affected
+Time: 0.019s
+
+# 2022-11-10 22:29:44.762198
+select * from tmp;
++-------------------+-----+------------+
+| Full_name         | Age | Passport   |
++-------------------+-----+------------+
+| Мива Макинами     | 56  | 7818478233 |
+| Кира Мухаммед     | 90  | 2702162558 |
+| Синдзи Почитта    | 47  | 1713007159 |
+| Джолин Лайт       | 42  | 5955587707 |
+| Джорно Йошикаге   | 4   | 3604628488 |
+| Жоржи Мухаммед    | 47  | 7434294503 |
+| Даниил Куджо      | 22  | 1217562659 |
+| Фэй Джостар       | 28  | 8359314123 |
+| Роуз Геноза       | 86  | 3218876729 |
+| Джозеф Джостар    | 8   | 5720607731 |
+| Илья Лайт         | 64  | 9773355810 |
+| Константин Амане  | 65  | 2616906135 |
+| Дива Агацума      | 79  | 8467356710 |
+| Джонатан Макинами | 62  | 1640823282 |
+| Джонатан Почитта  | 10  | 2403008459 |
+| Роуз Ленгли       | 1   | 7478332364 |
+| Джолин Агацума    | 66  | 4593159892 |
+| Дива Почитта      | 75  | 1529276322 |
+| Илья Амане        | 20  | 4097248329 |
+| Джонатан Ленгли   | 91  | 7076427086 |
++-------------------+-----+------------+
+20 rows in set
+Time: 0.045s
+Your call!
+
+# 2022-11-10 22:31:40.323641
+update `tmp` set `Age` = `Age` * 2;
+Query OK, 20 rows affected
+Time: 0.002s
+
+# 2022-11-10 22:32:17.910021
+select * from tmp;
++-------------------+-----+------------+
+| Full_name         | Age | Passport   |
++-------------------+-----+------------+
+| Мива Макинами     | 112 | 7818478233 |
+| Кира Мухаммед     | 180 | 2702162558 |
+| Синдзи Почитта    | 94  | 1713007159 |
+| Джолин Лайт       | 84  | 5955587707 |
+| Джорно Йошикаге   | 8   | 3604628488 |
+| Жоржи Мухаммед    | 94  | 7434294503 |
+| Даниил Куджо      | 44  | 1217562659 |
+| Фэй Джостар       | 56  | 8359314123 |
+| Роуз Геноза       | 172 | 3218876729 |
+| Джозеф Джостар    | 16  | 5720607731 |
+| Илья Лайт         | 128 | 9773355810 |
+| Константин Амане  | 130 | 2616906135 |
+| Дива Агацума      | 158 | 8467356710 |
+| Джонатан Макинами | 124 | 1640823282 |
+| Джонатан Почитта  | 20  | 2403008459 |
+| Роуз Ленгли       | 2   | 7478332364 |
+| Джолин Агацума    | 132 | 4593159892 |
+| Дива Почитта      | 150 | 1529276322 |
+| Илья Амане        | 40  | 4097248329 |
+| Джонатан Ленгли   | 182 | 7076427086 |
++-------------------+-----+------------+
+20 rows in set
+Time: 0.045s
+
+#+END_SRC
+
+2. Назначение запроса: добавляем столбец email в таблицу tmp
+
+#+BEGIN_SRC sql
+
+# 2022-11-10 22:34:48.289868
+show columns from tmp;
++-----------+------------------+------+-----+---------+-------+
+| Field     | Type             | Null | Key | Default | Extra |
++-----------+------------------+------+-----+---------+-------+
+| Full_name | char(128)        | NO   |     | <null>  | NULL  |
+| Age       | tinyint unsigned | NO   |     | <null>  | NULL  |
+| Passport  | char(10)         | NO   |     | <null>  | NULL  |
++-----------+------------------+------+-----+---------+-------+
+3 rows in set
+Time: 0.033s
+Your call!
+
+# 2022-11-10 22:35:11.399922
+alter table `tmp` add `email` nchar(255) null default( 'default@default.ru' );
+Query OK, 20 rows affected
+Time: 0.004s
+
+# 2022-11-10 22:35:24.566821
+show columns from tmp;
++-----------+------------------+------+-----+--------------------------------+-------+
+| Field     | Type             | Null | Key | Default                        | Extra |
++-----------+------------------+------+-----+--------------------------------+-------+
+| Full_name | char(128)        | NO   |     | <null>                         | NULL  |
+| Age       | tinyint unsigned | NO   |     | <null>                         | NULL  |
+| Passport  | char(10)         | NO   |     | <null>                         | NULL  |
+| email     | char(255)        | YES  |     | (_utf8mb3'default@default.ru') | NULL  |
++-----------+------------------+------+-----+--------------------------------+-------+
+4 rows in set
+Time: 0.021s
+#+END_SRC
+
+3. Назначение запроса: добавляем ограничение на уникальность паспорта и на вид вводимого email-а, проверяем их, вводя неправильные данные - сначала неправильный email, потом повторяющийся пасспорт
+
+#+BEGIN_SRC sql
+# 2022-11-10 22:36:57.325260
+alter table `tmp` add constraint UNIQUE(`Passport`)
+Query OK, 20 rows affected
+Time: 0.004s
+Your call!
+
+# 2022-11-10 22:40:41.065524
+alter table `tmp` add constraint email check( email regexp '^[a-z0-9A-Z_]*@[a-z0-9A-Z_].[a-z]*')
+Query OK, 20 rows affected
+Time: 0.094s
+
+# 2022-11-10 22:40:53.567291
+show columns from tmp;
++-----------+------------------+------+-----+--------------------------------+-------+
+| Field     | Type             | Null | Key | Default                        | Extra |
++-----------+------------------+------+-----+--------------------------------+-------+
+| Full_name | char(128)        | NO   |     | <null>                         | NULL  |
+| Age       | tinyint unsigned | NO   |     | <null>                         | NULL  |
+| Passport  | char(10)         | NO   | PRI | <null>                         | NULL  |
+| email     | char(255)        | YES  |     | (_utf8mb3'default@default.ru') | NULL  |
++-----------+------------------+------+-----+--------------------------------+-------+
+4 rows in set
+Time: 0.044s
+
+# 2022-11-10 22:44:43.908033
+insert into `tmp` values ('Stan Pines', 10, 1111112233, 'abc')
+(3819, "Check constraint 'email' is violated.")
+
+# 2022-11-10 22:45:08.355879
+insert into `tmp` values ('Stan Pines', 10, 7818478233, 'abc@abc.abc')
+(1062, "Duplicate entry '7818478233' for key 'tmp.Passport'")
+
+#+END_SRC
+
+4. Назначение запроса: удаление ограничения на уникальность пасспорта и добавление новой записи с повторяющимся пвспортом
+
+#+BEGIN_SRC sql
+
+# 2022-11-10 22:46:28.163988
+alter table tmp drop index `Passport`
+Query OK, 20 rows affected
+Time: 0.004s
+
+# 2022-11-10 22:46:31.913388
+insert into `tmp` values ('Stan Pines', 10, 7818478233, 'abc@abc.abc')
+Query OK, 1 row affected
+Time: 0.010s
+
+#+END_SRC
+
+5. Назначение запроса: удаление столбца Passport из таблицы
+
+#+BEGIN_SRC sql
+
+# 2022-11-10 22:47:18.029048
+alter table tmp drop column `Passport`;
+Query OK, 21 rows affected
+Time: 0.005s
+
+# 2022-11-10 22:47:25.217653
+show columns from tmp;
++-----------+------------------+------+-----+--------------------------------+-------+
+| Field     | Type             | Null | Key | Default                        | Extra |
++-----------+------------------+------+-----+--------------------------------+-------+
+| Full_name | char(128)        | NO   |     | <null>                         | NULL  |
+| Age       | tinyint unsigned | NO   |     | <null>                         | NULL  |
+| email     | char(255)        | YES  |     | (_utf8mb3'default@default.ru') | NULL  |
++-----------+------------------+------+-----+--------------------------------+-------+
+3 rows in set
+Time: 0.023s
+
+#+END_SRC
+
+6. Назначение запроса: удаление записей с возрастом сначала < 18, потом > 100
+
+#+BEGIN_SRC sql
+# 2022-11-10 22:50:54.063990
+select * from tmp;
++-------------------+-----+--------------------+
+| Full_name         | Age | email              |
++-------------------+-----+--------------------+
+| Даниил Куджо      | 44  | default@default.ru |
+| Дива Почитта      | 150 | default@default.ru |
+| Джонатан Макинами | 124 | default@default.ru |
+| Синдзи Почитта    | 94  | default@default.ru |
+| Джонатан Почитта  | 20  | default@default.ru |
+| Константин Амане  | 130 | default@default.ru |
+| Кира Мухаммед     | 180 | default@default.ru |
+| Роуз Геноза       | 172 | default@default.ru |
+| Джорно Йошикаге   | 8   | default@default.ru |
+| Илья Амане        | 40  | default@default.ru |
+| Джолин Агацума    | 132 | default@default.ru |
+| Джозеф Джостар    | 16  | default@default.ru |
+| Джолин Лайт       | 84  | default@default.ru |
+| Джонатан Ленгли   | 182 | default@default.ru |
+| Жоржи Мухаммед    | 94  | default@default.ru |
+| Роуз Ленгли       | 2   | default@default.ru |
+| Мива Макинами     | 112 | default@default.ru |
+| Фэй Джостар       | 56  | default@default.ru |
+| Дива Агацума      | 158 | default@default.ru |
+| Илья Лайт         | 128 | default@default.ru |
+| Stan Pines        | 10  | abc@abc.abc        |
++-------------------+-----+--------------------+
+21 rows in set
+Time: 0.033s
+Your call!
+
+# 2022-11-10 22:51:00.488614
+delete from `tmp` where age < 18;
+Query OK, 4 rows affected
+Time: 0.002s
+
+# 2022-11-10 22:51:02.887569
+select * from tmp;
++-------------------+-----+--------------------+
+| Full_name         | Age | email              |
++-------------------+-----+--------------------+
+| Даниил Куджо      | 44  | default@default.ru |
+| Дива Почитта      | 150 | default@default.ru |
+| Джонатан Макинами | 124 | default@default.ru |
+| Синдзи Почитта    | 94  | default@default.ru |
+| Джонатан Почитта  | 20  | default@default.ru |
+| Константин Амане  | 130 | default@default.ru |
+| Кира Мухаммед     | 180 | default@default.ru |
+| Роуз Геноза       | 172 | default@default.ru |
+| Илья Амане        | 40  | default@default.ru |
+| Джолин Агацума    | 132 | default@default.ru |
+| Джолин Лайт       | 84  | default@default.ru |
+| Джонатан Ленгли   | 182 | default@default.ru |
+| Жоржи Мухаммед    | 94  | default@default.ru |
+| Мива Макинами     | 112 | default@default.ru |
+| Фэй Джостар       | 56  | default@default.ru |
+| Дива Агацума      | 158 | default@default.ru |
+| Илья Лайт         | 128 | default@default.ru |
++-------------------+-----+--------------------+
+17 rows in set
+Time: 0.024s
+Your call!
+
+# 2022-11-10 22:51:13.425145
+delete from `tmp` where age > 100;
+Query OK, 10 rows affected
+Time: 0.002s
+
+# 2022-11-10 22:51:15.852830
+select * from tmp;
++------------------+-----+--------------------+
+| Full_name        | Age | email              |
++------------------+-----+--------------------+
+| Даниил Куджо     | 44  | default@default.ru |
+| Синдзи Почитта   | 94  | default@default.ru |
+| Джонатан Почитта | 20  | default@default.ru |
+| Илья Амане       | 40  | default@default.ru |
+| Джолин Лайт      | 84  | default@default.ru |
+| Жоржи Мухаммед   | 94  | default@default.ru |
+| Фэй Джостар      | 56  | default@default.ru |
++------------------+-----+--------------------+
+7 rows in set
+Time: 0.042s
+
+
+#+END_SRC

@@ -1,0 +1,2266 @@
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-09 23:14:24.835469
+use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.002s
+
+# 2022-11-09 23:15:31.475856
+select `People`.`Full_name` as 'name', sum(`HotelOrder`.`Price`) as 'sum'
+from (`People` inner join `HotelOrder`
+on `People`.person_id = `HotelOrder`.person_id) group by `People`.`Full_name`;
+
++-------------------+--------+
+| name              | sum    |
++-------------------+--------+
+| Джолин Агацума    | 208037 |
+| Роуз Геноза       | 467315 |
+| Джонатан Макинами | 348189 |
+| Дива Почитта      | 66062  |
+| Фэй Джостар       | 563270 |
+| Роуз Ленгли       | 301181 |
+| Даниил Куджо      | 943745 |
+| Жоржи Мухаммед    | 677814 |
+| Мива Макинами     | 4371   |
+| Джонатан Ленгли   | 813169 |
+| Дива Агацума      | 524880 |
+| Кира Мухаммед     | 467683 |
++-------------------+--------+
+12 rows in set
+Time: 0.072s
+
+# 2022-11-09 23:15:42.568702
+quit
+Goodbye!
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-09 23:38:47.624524
+use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.001s
+
+# 2022-11-09 23:39:09.378448
+select p.`Full_name`, r.`Number`, r.`Floor`, r.`Class` from `People` p
+inner join
+(`HotelOrder` h inner join `Room` r on h.room_id = r.room_id)
+on p.person_id = h.person_id order by p.`Full_name`, r.`Floor`, r.`Number`;
++-------------------+--------+-------+----------+
+| Full_name         | Number | Floor | Class    |
++-------------------+--------+-------+----------+
+| Даниил Куджо      | 5      | 2     | half vip |
+| Даниил Куджо      | 1      | 3     | vip      |
+| Даниил Куджо      | 2      | 4     | half vip |
+| Джолин Агацума    | 1      | 6     | standart |
+| Джонатан Ленгли   | 3      | 1     | half vip |
+| Джонатан Ленгли   | 3      | 4     | half vip |
+| Джонатан Макинами | 2      | 3     | half vip |
+| Дива Агацума      | 1      | 4     | standart |
+| Дива Агацума      | 1      | 6     | standart |
+| Дива Почитта      | 1      | 5     | standart |
+| Жоржи Мухаммед    | 4      | 1     | standart |
+| Жоржи Мухаммед    | 4      | 4     | standart |
+| Жоржи Мухаммед    | 1      | 5     | standart |
+| Кира Мухаммед     | 4      | 2     | half vip |
+| Мива Макинами     | 3      | 2     | half vip |
+| Роуз Геноза       | 1      | 1     | standart |
+| Роуз Ленгли       | 3      | 3     | half vip |
+| Роуз Ленгли       | 1      | 5     | standart |
+| Фэй Джостар       | 3      | 1     | half vip |
+| Фэй Джостар       | 4      | 1     | standart |
++-------------------+--------+-------+----------+
+20 rows in set
+Time: 0.201s
+
+# 2022-11-09 23:39:19.296798
+quit
+Goodbye!
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-09 23:47:30.744649
+select p.`Full_name`, h.`Price` from `People` p inner join `HotelOrder` h using (person_id)
+where p.`Full_name` in ( select `People`.`Full_name` from `People` where `Age` < 18 );
+
+(1046, 'No database selected')
+
+# 2022-11-09 23:47:36.113905
+use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.001s
+
+# 2022-11-09 23:47:37.791389
+select p.`Full_name`, h.`Price` from `People` p inner join `HotelOrder` h using (person_id)
+where p.`Full_name` in ( select `People`.`Full_name` from `People` where `Age` < 18 );
+
++-------------+--------+
+| Full_name   | Price  |
++-------------+--------+
+| Роуз Ленгли | 288016 |
+| Роуз Ленгли | 13165  |
++-------------+--------+
+2 rows in set
+Time: 0.105s
+
+# 2022-11-09 23:55:43.685241
+select `People`.`Full_name` as 'people with age > 18'
+from ( select * from `People` where `Age` > 18 ) as People;
++----------------------+
+| people with age > 18 |
++----------------------+
+| Мива Макинами        |
+| Кира Мухаммед        |
+| Синдзи Почитта       |
+| Джолин Лайт          |
+| Жоржи Мухаммед       |
+| Даниил Куджо         |
+| Фэй Джостар          |
+| Роуз Геноза          |
+| Илья Лайт            |
+| Константин Амане     |
+| Дива Агацума         |
+| Джонатан Макинами    |
+| Джолин Агацума       |
+| Дива Почитта         |
+| Илья Амане           |
+| Джонатан Ленгли      |
++----------------------+
+16 rows in set
+Time: 0.037s
+
+# 2022-11-10 00:37:57.226619
+select `People`.`Full_name` as 'person', `People`.`passport`, `HotelOrder`.`order_id` as 'order_id'
+from `People` left join `HotelOrder` on `People`.person_id = `HotelOrder`.person_id  where `order_id` <=> null;
++------------------+------------+----------+
+| person           | passport   | order_id |
++------------------+------------+----------+
+| Синдзи Почитта   | 1713007159 | <null>   |
+| Джолин Лайт      | 5955587707 | <null>   |
+| Джорно Йошикаге  | 3604628488 | <null>   |
+| Джозеф Джостар   | 5720607731 | <null>   |
+| Илья Лайт        | 9773355810 | <null>   |
+| Константин Амане | 2616906135 | <null>   |
+| Джонатан Почитта | 2403008459 | <null>   |
+| Илья Амане       | 4097248329 | <null>   |
++------------------+------------+----------+
+8 rows in set
+Time: 0.056s
+
+# 2022-11-10 00:56:04.198930
+select `Floor`, `Number`, AVG( `Starts` ) from `Room` inner join `HotelOrder`
+order by `Floor`, `Number`;
+(1054, "Unknown column 'Starts' in 'field list'")
+
+# 2022-11-10 00:56:09.580774
+select `Floor`, `Number`, AVG( `Stars` ) from `Room` inner join `HotelOrder`
+order by `Floor`, `Number`;
+(1140, "In aggregated query without GROUP BY, expression #1 of SELECT list contains nonaggregated column 'labs.Room.Floor'; this is incompatible with sql_mode=only_full_group_by")
+
+# 2022-11-10 00:57:17.466747
+select `Floor`, `Number`, AVG( `Stars` ) from `Room` inner join `HotelOrder` group by `Floor`, `Number`
+order by `Floor`, `Number`;
++-------+--------+----------------+
+| Floor | Number | AVG( `Stars` ) |
++-------+--------+----------------+
+| 1     | 1      | 2.7000         |
+| 1     | 2      | 2.7000         |
+| 1     | 3      | 2.7000         |
+| 1     | 4      | 2.7000         |
+| 2     | 1      | 2.7000         |
+| 2     | 2      | 2.7000         |
+| 2     | 3      | 2.7000         |
+| 2     | 4      | 2.7000         |
+| 2     | 5      | 2.7000         |
+| 3     | 1      | 2.7000         |
+| 3     | 2      | 2.7000         |
+| 3     | 3      | 2.7000         |
+| 3     | 4      | 2.7000         |
+| 3     | 5      | 2.7000         |
+| 4     | 1      | 2.7000         |
+| 4     | 2      | 2.7000         |
+| 4     | 3      | 2.7000         |
+| 4     | 4      | 2.7000         |
+| 5     | 1      | 2.7000         |
+| 6     | 1      | 2.7000         |
++-------+--------+----------------+
+20 rows in set
+Time: 0.068s
+
+# 2022-11-10 01:03:22.198150
+select r.`Floor`, r.`Number`, AVG( r.`Stars` ) from 
+`Room` r inner join `HotelOrder` h on r.room_id = h.room_id
+group by r.`Floor`, r.`Number`
+order by r.`Floor`, r.`Number`;
+(1054, "Unknown column 'r.Stars' in 'field list'")
+
+# 2022-11-10 01:03:40.315607
+select r.`Floor`, r.`Number`, AVG( h.`Stars` ) from 
+`Room` r inner join `HotelOrder` h on r.room_id = h.room_id
+group by r.`Floor`, r.`Number`
+order by r.`Floor`, r.`Number`;
++-------+--------+------------------+
+| Floor | Number | AVG( h.`Stars` ) |
++-------+--------+------------------+
+| 1     | 1      | 1.0000           |
+| 1     | 3      | 3.5000           |
+| 1     | 4      | 3.5000           |
+| 2     | 3      | 3.0000           |
+| 2     | 4      | 5.0000           |
+| 2     | 5      | 0.0000           |
+| 3     | 1      | 2.0000           |
+| 3     | 2      | 3.0000           |
+| 3     | 3      | 5.0000           |
+| 4     | 1      | 5.0000           |
+| 4     | 2      | 4.0000           |
+| 4     | 3      | 4.0000           |
+| 4     | 4      | 1.0000           |
+| 5     | 1      | 2.3333           |
+| 6     | 1      | 0.0000           |
++-------+--------+------------------+
+15 rows in set
+Time: 0.039s
+
+# 2022-11-10 01:03:57.978227
+select r.`Floor`, r.`Number`, AVG( h.`Stars` ) from 
+`Room` r right join `HotelOrder` h on r.room_id = h.room_id
+group by r.`Floor`, r.`Number`
+order by r.`Floor`, r.`Number`;
++-------+--------+------------------+
+| Floor | Number | AVG( h.`Stars` ) |
++-------+--------+------------------+
+| 1     | 1      | 1.0000           |
+| 1     | 3      | 3.5000           |
+| 1     | 4      | 3.5000           |
+| 2     | 3      | 3.0000           |
+| 2     | 4      | 5.0000           |
+| 2     | 5      | 0.0000           |
+| 3     | 1      | 2.0000           |
+| 3     | 2      | 3.0000           |
+| 3     | 3      | 5.0000           |
+| 4     | 1      | 5.0000           |
+| 4     | 2      | 4.0000           |
+| 4     | 3      | 4.0000           |
+| 4     | 4      | 1.0000           |
+| 5     | 1      | 2.3333           |
+| 6     | 1      | 0.0000           |
++-------+--------+------------------+
+15 rows in set
+Time: 0.026s
+
+# 2022-11-10 01:04:39.434477
+select r.`Floor`, r.`Number`, AVG( h.`Stars` ) from 
+`Room` r left join `HotelOrder` h on r.room_id = h.room_id
+group by r.`Floor`, r.`Number`
+order by r.`Floor`, r.`Number`;
++-------+--------+------------------+
+| Floor | Number | AVG( h.`Stars` ) |
++-------+--------+------------------+
+| 1     | 1      | 1.0000           |
+| 1     | 2      | <null>           |
+| 1     | 3      | 3.5000           |
+| 1     | 4      | 3.5000           |
+| 2     | 1      | <null>           |
+| 2     | 2      | <null>           |
+| 2     | 3      | 3.0000           |
+| 2     | 4      | 5.0000           |
+| 2     | 5      | 0.0000           |
+| 3     | 1      | 2.0000           |
+| 3     | 2      | 3.0000           |
+| 3     | 3      | 5.0000           |
+| 3     | 4      | <null>           |
+| 3     | 5      | <null>           |
+| 4     | 1      | 5.0000           |
+| 4     | 2      | 4.0000           |
+| 4     | 3      | 4.0000           |
+| 4     | 4      | 1.0000           |
+| 5     | 1      | 2.3333           |
+| 6     | 1      | 0.0000           |
++-------+--------+------------------+
+20 rows in set
+Time: 0.030s
+
+# 2022-11-10 01:27:42.325236
+quit
+Goodbye!
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-10 22:16:42.261553
+use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.001s
+
+# 2022-11-10 22:16:55.064480
+create temporary table tmp (select * from`People`);
+Query OK, 20 rows affected
+Time: 0.007s
+Your call!
+
+# 2022-11-10 22:17:43.513122
+alter table `tmp` add `email` nchar(255) default( 'default@default.ru' );
+Query OK, 20 rows affected
+Time: 0.030s
+Your call!
+
+# 2022-11-10 22:17:55.727470
+drop table tmp;
+Query OK, 0 rows affected
+Time: 0.005s
+
+# 2022-11-10 22:18:00.653185
+create temporary table tmp (select * from`People`);
+Query OK, 20 rows affected
+Time: 0.007s
+
+# 2022-11-10 22:18:17.326131
+show columns from tmp;
++-----------+-----------------------------------------------------------------------------------+------+-----+---------+-------+
+| Field     | Type                                                                              | Null | Key | Default | Extra |
++-----------+-----------------------------------------------------------------------------------+------+-----+---------+-------+
+| Full_name | char(128)                                                                         | NO   |     | <null>  | NULL  |
+| Age       | tinyint unsigned                                                                  | NO   |     | <null>  | NULL  |
+| Passport  | char(10)                                                                          | NO   |     | <null>  | NULL  |
+| Sex       | enum('Not known','Male','Female','Not applicable','helicopter','deer','kostyaan') | NO   |     | <null>  | NULL  |
+| person_id | int unsigned                                                                      | NO   |     | 0       | NULL  |
++-----------+-----------------------------------------------------------------------------------+------+-----+---------+-------+
+5 rows in set
+Time: 0.132s
+Your call!
+
+# 2022-11-10 22:18:38.764199
+alter table `tmp` add `email` nchar(255) null default( 'default@default.ru' );
+Query OK, 20 rows affected
+Time: 0.007s
+
+# 2022-11-10 22:18:41.329821
+show columns from tmp;
++-----------+-----------------------------------------------------------------------------------+------+-----+--------------------------------+-------+
+| Field     | Type                                                                              | Null | Key | Default                        | Extra |
++-----------+-----------------------------------------------------------------------------------+------+-----+--------------------------------+-------+
+| Full_name | char(128)                                                                         | NO   |     | <null>                         | NULL  |
+| Age       | tinyint unsigned                                                                  | NO   |     | <null>                         | NULL  |
+| Passport  | char(10)                                                                          | NO   |     | <null>                         | NULL  |
+| Sex       | enum('Not known','Male','Female','Not applicable','helicopter','deer','kostyaan') | NO   |     | <null>                         | NULL  |
+| person_id | int unsigned                                                                      | NO   |     | 0                              | NULL  |
+| email     | char(255)                                                                         | YES  |     | (_utf8mb3'default@default.ru') | NULL  |
++-----------+-----------------------------------------------------------------------------------+------+-----+--------------------------------+-------+
+6 rows in set
+Time: 0.064s
+Your call!
+
+# 2022-11-10 22:22:51.836367
+alter table `tmp` add constraint UNIQUE(`Passport`)
+Query OK, 20 rows affected
+Time: 0.006s
+
+# 2022-11-10 22:22:54.279118
+show columns from tmp;
++-----------+-----------------------------------------------------------------------------------+------+-----+--------------------------------+-------+
+| Field     | Type                                                                              | Null | Key | Default                        | Extra |
++-----------+-----------------------------------------------------------------------------------+------+-----+--------------------------------+-------+
+| Full_name | char(128)                                                                         | NO   |     | <null>                         | NULL  |
+| Age       | tinyint unsigned                                                                  | NO   |     | <null>                         | NULL  |
+| Passport  | char(10)                                                                          | NO   | PRI | <null>                         | NULL  |
+| Sex       | enum('Not known','Male','Female','Not applicable','helicopter','deer','kostyaan') | NO   |     | <null>                         | NULL  |
+| person_id | int unsigned                                                                      | NO   |     | 0                              | NULL  |
+| email     | char(255)                                                                         | YES  |     | (_utf8mb3'default@default.ru') | NULL  |
++-----------+-----------------------------------------------------------------------------------+------+-----+--------------------------------+-------+
+6 rows in set
+Time: 0.042s
+
+# 2022-11-10 22:23:44.275978
+quit;
+Goodbye!
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-10 22:24:43.340691
+use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.002s
+
+# 2022-11-10 22:25:20.076368
+create temporary table tmp (select * from`People`);
+Query OK, 20 rows affected
+Time: 0.005s
+Your call!
+
+# 2022-11-10 22:25:28.285889
+alter table `tmp` add constraint UNIQUE(`Passport`)
+Query OK, 20 rows affected
+Time: 0.004s
+Your call!
+
+# 2022-11-10 22:25:54.375402
+alter table `tmp` add constraint UNIQUE(`person_id`)
+Query OK, 20 rows affected
+Time: 0.008s
+
+# 2022-11-10 22:25:59.500064
+show columns from tmp;
++-----------+-----------------------------------------------------------------------------------+------+-----+---------+-------+
+| Field     | Type                                                                              | Null | Key | Default | Extra |
++-----------+-----------------------------------------------------------------------------------+------+-----+---------+-------+
+| Full_name | char(128)                                                                         | NO   |     | <null>  | NULL  |
+| Age       | tinyint unsigned                                                                  | NO   |     | <null>  | NULL  |
+| Passport  | char(10)                                                                          | NO   | PRI | <null>  | NULL  |
+| Sex       | enum('Not known','Male','Female','Not applicable','helicopter','deer','kostyaan') | NO   |     | <null>  | NULL  |
+| person_id | int unsigned                                                                      | NO   | UNI | 0       | NULL  |
++-----------+-----------------------------------------------------------------------------------+------+-----+---------+-------+
+5 rows in set
+Time: 0.058s
+Your call!
+
+# 2022-11-10 22:26:24.151128
+drop table tmp;
+Query OK, 0 rows affected
+Time: 0.002s
+
+# 2022-11-10 22:26:29.621000
+create temporary table tmp (select * from`People`);
+Query OK, 20 rows affected
+Time: 0.006s
+Your call!
+
+# 2022-11-10 22:27:26.948397
+alter table `tmp` add `email` nchar(255) null default( 'default@default.ru' );
+Query OK, 20 rows affected
+Time: 0.005s
+Your call!
+
+# 2022-11-10 22:27:42.920300
+alter table `tmp` add constraint UNIQUE(`Passport`)
+Query OK, 20 rows affected
+Time: 0.006s
+
+# 2022-11-10 22:28:33.246932
+quit;
+Goodbye!
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-10 22:28:44.839756
+use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.001s
+
+# 2022-11-10 22:29:26.207321
+create temporary table tmp (select `Full_name`, `Age`, `Passport` from `People`);
+Query OK, 20 rows affected
+Time: 0.019s
+
+# 2022-11-10 22:29:44.762198
+select * from tmp;
++-------------------+-----+------------+
+| Full_name         | Age | Passport   |
++-------------------+-----+------------+
+| Мива Макинами     | 56  | 7818478233 |
+| Кира Мухаммед     | 90  | 2702162558 |
+| Синдзи Почитта    | 47  | 1713007159 |
+| Джолин Лайт       | 42  | 5955587707 |
+| Джорно Йошикаге   | 4   | 3604628488 |
+| Жоржи Мухаммед    | 47  | 7434294503 |
+| Даниил Куджо      | 22  | 1217562659 |
+| Фэй Джостар       | 28  | 8359314123 |
+| Роуз Геноза       | 86  | 3218876729 |
+| Джозеф Джостар    | 8   | 5720607731 |
+| Илья Лайт         | 64  | 9773355810 |
+| Константин Амане  | 65  | 2616906135 |
+| Дива Агацума      | 79  | 8467356710 |
+| Джонатан Макинами | 62  | 1640823282 |
+| Джонатан Почитта  | 10  | 2403008459 |
+| Роуз Ленгли       | 1   | 7478332364 |
+| Джолин Агацума    | 66  | 4593159892 |
+| Дива Почитта      | 75  | 1529276322 |
+| Илья Амане        | 20  | 4097248329 |
+| Джонатан Ленгли   | 91  | 7076427086 |
++-------------------+-----+------------+
+20 rows in set
+Time: 0.045s
+Your call!
+
+# 2022-11-10 22:31:40.323641
+update `tmp` set `Age` = `Age` * 2;
+Query OK, 20 rows affected
+Time: 0.002s
+
+# 2022-11-10 22:32:17.910021
+select * from tmp;
++-------------------+-----+------------+
+| Full_name         | Age | Passport   |
++-------------------+-----+------------+
+| Мива Макинами     | 112 | 7818478233 |
+| Кира Мухаммед     | 180 | 2702162558 |
+| Синдзи Почитта    | 94  | 1713007159 |
+| Джолин Лайт       | 84  | 5955587707 |
+| Джорно Йошикаге   | 8   | 3604628488 |
+| Жоржи Мухаммед    | 94  | 7434294503 |
+| Даниил Куджо      | 44  | 1217562659 |
+| Фэй Джостар       | 56  | 8359314123 |
+| Роуз Геноза       | 172 | 3218876729 |
+| Джозеф Джостар    | 16  | 5720607731 |
+| Илья Лайт         | 128 | 9773355810 |
+| Константин Амане  | 130 | 2616906135 |
+| Дива Агацума      | 158 | 8467356710 |
+| Джонатан Макинами | 124 | 1640823282 |
+| Джонатан Почитта  | 20  | 2403008459 |
+| Роуз Ленгли       | 2   | 7478332364 |
+| Джолин Агацума    | 132 | 4593159892 |
+| Дива Почитта      | 150 | 1529276322 |
+| Илья Амане        | 40  | 4097248329 |
+| Джонатан Ленгли   | 182 | 7076427086 |
++-------------------+-----+------------+
+20 rows in set
+Time: 0.045s
+
+# 2022-11-10 22:34:48.289868
+show columns from tmp;
++-----------+------------------+------+-----+---------+-------+
+| Field     | Type             | Null | Key | Default | Extra |
++-----------+------------------+------+-----+---------+-------+
+| Full_name | char(128)        | NO   |     | <null>  | NULL  |
+| Age       | tinyint unsigned | NO   |     | <null>  | NULL  |
+| Passport  | char(10)         | NO   |     | <null>  | NULL  |
++-----------+------------------+------+-----+---------+-------+
+3 rows in set
+Time: 0.033s
+Your call!
+
+# 2022-11-10 22:35:11.399922
+alter table `tmp` add `email` nchar(255) null default( 'default@default.ru' );
+Query OK, 20 rows affected
+Time: 0.004s
+
+# 2022-11-10 22:35:24.566821
+show columns from tmp;
++-----------+------------------+------+-----+--------------------------------+-------+
+| Field     | Type             | Null | Key | Default                        | Extra |
++-----------+------------------+------+-----+--------------------------------+-------+
+| Full_name | char(128)        | NO   |     | <null>                         | NULL  |
+| Age       | tinyint unsigned | NO   |     | <null>                         | NULL  |
+| Passport  | char(10)         | NO   |     | <null>                         | NULL  |
+| email     | char(255)        | YES  |     | (_utf8mb3'default@default.ru') | NULL  |
++-----------+------------------+------+-----+--------------------------------+-------+
+4 rows in set
+Time: 0.021s
+Your call!
+
+# 2022-11-10 22:36:57.325260
+alter table `tmp` add constraint UNIQUE(`Passport`)
+Query OK, 20 rows affected
+Time: 0.004s
+Your call!
+
+# 2022-11-10 22:40:41.065524
+alter table `tmp` add constraint email check( email regexp '^[a-z0-9A-Z_]*@[a-z0-9A-Z_].[a-z]*')
+Query OK, 20 rows affected
+Time: 0.094s
+
+# 2022-11-10 22:40:53.567291
+show columns from tmp;
++-----------+------------------+------+-----+--------------------------------+-------+
+| Field     | Type             | Null | Key | Default                        | Extra |
++-----------+------------------+------+-----+--------------------------------+-------+
+| Full_name | char(128)        | NO   |     | <null>                         | NULL  |
+| Age       | tinyint unsigned | NO   |     | <null>                         | NULL  |
+| Passport  | char(10)         | NO   | PRI | <null>                         | NULL  |
+| email     | char(255)        | YES  |     | (_utf8mb3'default@default.ru') | NULL  |
++-----------+------------------+------+-----+--------------------------------+-------+
+4 rows in set
+Time: 0.044s
+
+# 2022-11-10 22:44:43.908033
+insert into `tmp` values ('Stan Pines', 10, 1111112233, 'abc')
+(3819, "Check constraint 'email' is violated.")
+
+# 2022-11-10 22:45:08.355879
+insert into `tmp` values ('Stan Pines', 10, 7818478233, 'abc@abc.abc')
+(1062, "Duplicate entry '7818478233' for key 'tmp.Passport'")
+Your call!
+
+# 2022-11-10 22:46:28.163988
+alter table tmp drop index `Passport`
+Query OK, 20 rows affected
+Time: 0.004s
+
+# 2022-11-10 22:46:31.913388
+insert into `tmp` values ('Stan Pines', 10, 7818478233, 'abc@abc.abc')
+Query OK, 1 row affected
+Time: 0.010s
+Your call!
+
+# 2022-11-10 22:47:18.029048
+alter table tmp drop column `Passport`;
+Query OK, 21 rows affected
+Time: 0.005s
+
+# 2022-11-10 22:47:25.217653
+show columns from tmp;
++-----------+------------------+------+-----+--------------------------------+-------+
+| Field     | Type             | Null | Key | Default                        | Extra |
++-----------+------------------+------+-----+--------------------------------+-------+
+| Full_name | char(128)        | NO   |     | <null>                         | NULL  |
+| Age       | tinyint unsigned | NO   |     | <null>                         | NULL  |
+| email     | char(255)        | YES  |     | (_utf8mb3'default@default.ru') | NULL  |
++-----------+------------------+------+-----+--------------------------------+-------+
+3 rows in set
+Time: 0.023s
+Wise choice!
+
+# 2022-11-10 22:50:54.063990
+select * from tmp;
++-------------------+-----+--------------------+
+| Full_name         | Age | email              |
++-------------------+-----+--------------------+
+| Даниил Куджо      | 44  | default@default.ru |
+| Дива Почитта      | 150 | default@default.ru |
+| Джонатан Макинами | 124 | default@default.ru |
+| Синдзи Почитта    | 94  | default@default.ru |
+| Джонатан Почитта  | 20  | default@default.ru |
+| Константин Амане  | 130 | default@default.ru |
+| Кира Мухаммед     | 180 | default@default.ru |
+| Роуз Геноза       | 172 | default@default.ru |
+| Джорно Йошикаге   | 8   | default@default.ru |
+| Илья Амане        | 40  | default@default.ru |
+| Джолин Агацума    | 132 | default@default.ru |
+| Джозеф Джостар    | 16  | default@default.ru |
+| Джолин Лайт       | 84  | default@default.ru |
+| Джонатан Ленгли   | 182 | default@default.ru |
+| Жоржи Мухаммед    | 94  | default@default.ru |
+| Роуз Ленгли       | 2   | default@default.ru |
+| Мива Макинами     | 112 | default@default.ru |
+| Фэй Джостар       | 56  | default@default.ru |
+| Дива Агацума      | 158 | default@default.ru |
+| Илья Лайт         | 128 | default@default.ru |
+| Stan Pines        | 10  | abc@abc.abc        |
++-------------------+-----+--------------------+
+21 rows in set
+Time: 0.033s
+Your call!
+
+# 2022-11-10 22:51:00.488614
+delete from `tmp` where age < 18;
+Query OK, 4 rows affected
+Time: 0.002s
+
+# 2022-11-10 22:51:02.887569
+select * from tmp;
++-------------------+-----+--------------------+
+| Full_name         | Age | email              |
++-------------------+-----+--------------------+
+| Даниил Куджо      | 44  | default@default.ru |
+| Дива Почитта      | 150 | default@default.ru |
+| Джонатан Макинами | 124 | default@default.ru |
+| Синдзи Почитта    | 94  | default@default.ru |
+| Джонатан Почитта  | 20  | default@default.ru |
+| Константин Амане  | 130 | default@default.ru |
+| Кира Мухаммед     | 180 | default@default.ru |
+| Роуз Геноза       | 172 | default@default.ru |
+| Илья Амане        | 40  | default@default.ru |
+| Джолин Агацума    | 132 | default@default.ru |
+| Джолин Лайт       | 84  | default@default.ru |
+| Джонатан Ленгли   | 182 | default@default.ru |
+| Жоржи Мухаммед    | 94  | default@default.ru |
+| Мива Макинами     | 112 | default@default.ru |
+| Фэй Джостар       | 56  | default@default.ru |
+| Дива Агацума      | 158 | default@default.ru |
+| Илья Лайт         | 128 | default@default.ru |
++-------------------+-----+--------------------+
+17 rows in set
+Time: 0.024s
+Your call!
+
+# 2022-11-10 22:51:13.425145
+delete from `tmp` where age > 100;
+Query OK, 10 rows affected
+Time: 0.002s
+
+# 2022-11-10 22:51:15.852830
+select * from tmp;
++------------------+-----+--------------------+
+| Full_name        | Age | email              |
++------------------+-----+--------------------+
+| Даниил Куджо     | 44  | default@default.ru |
+| Синдзи Почитта   | 94  | default@default.ru |
+| Джонатан Почитта | 20  | default@default.ru |
+| Илья Амане       | 40  | default@default.ru |
+| Джолин Лайт      | 84  | default@default.ru |
+| Жоржи Мухаммед   | 94  | default@default.ru |
+| Фэй Джостар      | 56  | default@default.ru |
++------------------+-----+--------------------+
+7 rows in set
+Time: 0.042s
+
+# 2022-11-10 23:10:15.560961
+quit;
+Goodbye!
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-10 23:12:47.335043
+use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.001s
+
+# 2022-11-10 23:37:32.170779
+select `Full_name`,
+group_concat(select concat(convert(r.`Floor`, char), ':',convert(r.`Number`, char), ' - ', r.`Class`)
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id order by r.Floor, r.`Number`, r.`Class` separator '\n' ) 
+from `People` p
+group by p.`Full_name`
+order by p.`Full_name`;
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'select concat(convert(r.`Floor`, char), ':',convert(r.`Number`, char), ' - ', r.' at line 2")
+
+# 2022-11-10 23:37:57.504434
+select `Full_name`,
+group_concat( (select concat(convert(r.`Floor`, char), ':',convert(r.`Number`, char), ' - ', r.`Class`)
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id order by r.Floor, r.`Number`, r.`Class`) separator '\n' ) 
+from `People` p
+group by p.`Full_name`
+order by p.`Full_name`;
+(1242, 'Subquery returns more than 1 row')
+
+# 2022-11-10 23:39:38.630683
+select `Full_name`,
+( group_concat(select concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`)
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id order by r.Floor, r.`Number`, r.`Class`) separator '\n' ) 
+from `People` p
+group by p.`Full_name`
+order by p.`Full_name`;
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'select concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r' at line 2")
+
+# 2022-11-10 23:41:01.447549
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`), separator '\n')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id order by r.Floor, r.`Number`, r.`Class` ) 
+from `People` p
+group by p.`Full_name`
+order by p.`Full_name`;
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'separator '\\n')\nfrom `HotelOrder` h inner join `Room` r\nusing(room_id)\nwhere h.p' at line 2")
+
+# 2022-11-10 23:41:43.035499
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`) separator '\n')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id order by r.Floor, r.`Number`, r.`Class` ) 
+from `People` p
+group by p.`Full_name`
+order by p.`Full_name`;
+(1055, "Expression #2 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'labs.p.person_id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by")
+
+# 2022-11-10 23:43:04.277512
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`) separator '\n')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by p.person_id order by r.Floor, r.`Number`, r.`Class` ) 
+from `People` p
+order by p.`Full_name`;
++-------------------+------------------------------------------------+
+| Full_name         | (select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`) separator '\n')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by p.person_id order by r.Floor, r.`Number`                                                |
++-------------------+------------------------------------------------+
+| Даниил Куджо      | 4:2 - half vip\n2:5 - half vip\n3:1 - vip      |
+| Джозеф Джостар    | <null>                                         |
+| Джолин Агацума    | 6:1 - standart                                 |
+| Джолин Лайт       | <null>                                         |
+| Джонатан Ленгли   | 1:3 - half vip\n4:3 - half vip                 |
+| Джонатан Макинами | 3:2 - half vip                                 |
+| Джонатан Почитта  | <null>                                         |
+| Джорно Йошикаге   | <null>                                         |
+| Дива Агацума      | 4:1 - standart\n6:1 - standart                 |
+| Дива Почитта      | 5:1 - standart                                 |
+| Жоржи Мухаммед    | 1:4 - standart\n5:1 - standart\n4:4 - standart |
+| Илья Амане        | <null>                                         |
+| Илья Лайт         | <null>                                         |
+| Кира Мухаммед     | 2:4 - half vip                                 |
+| Константин Амане  | <null>                                         |
+| Мива Макинами     | 2:3 - half vip                                 |
+| Роуз Геноза       | 1:1 - standart                                 |
+| Роуз Ленгли       | 3:3 - half vip\n5:1 - standart                 |
+| Синдзи Почитта    | <null>                                         |
+| Фэй Джостар       | 1:3 - half vip\n1:4 - standart                 |
++-------------------+------------------------------------------------+
+20 rows in set
+Time: 0.076s
+
+# 2022-11-10 23:44:52.518812
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`) separator '\n')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id order by r.Floor, r.`Number`, r.`Class` group by p.person ) as `orders`
+from `People` p
+order by p.`Full_name`;
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'group by p.person ) as `orders`\nfrom `People` p\norder by p.`Full_name`' at line 5")
+
+# 2022-11-10 23:45:20.810986
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`) separator '\n')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
++-------------------+------------------------------------------------+
+| Full_name         | orders                                         |
++-------------------+------------------------------------------------+
+| Даниил Куджо      | 4:2 - half vip\n2:5 - half vip\n3:1 - vip      |
+| Джозеф Джостар    | <null>                                         |
+| Джолин Агацума    | 6:1 - standart                                 |
+| Джолин Лайт       | <null>                                         |
+| Джонатан Ленгли   | 1:3 - half vip\n4:3 - half vip                 |
+| Джонатан Макинами | 3:2 - half vip                                 |
+| Джонатан Почитта  | <null>                                         |
+| Джорно Йошикаге   | <null>                                         |
+| Дива Агацума      | 4:1 - standart\n6:1 - standart                 |
+| Дива Почитта      | 5:1 - standart                                 |
+| Жоржи Мухаммед    | 1:4 - standart\n5:1 - standart\n4:4 - standart |
+| Илья Амане        | <null>                                         |
+| Илья Лайт         | <null>                                         |
+| Кира Мухаммед     | 2:4 - half vip                                 |
+| Константин Амане  | <null>                                         |
+| Мива Макинами     | 2:3 - half vip                                 |
+| Роуз Геноза       | 1:1 - standart                                 |
+| Роуз Ленгли       | 3:3 - half vip\n5:1 - standart                 |
+| Синдзи Почитта    | <null>                                         |
+| Фэй Джостар       | 1:3 - half vip\n1:4 - standart                 |
++-------------------+------------------------------------------------+
+20 rows in set
+Time: 0.022s
+
+# 2022-11-10 23:50:32.421363
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`) separator char(10))
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'char(10))\nfrom `HotelOrder` h inner join `Room` r\nusing(room_id)\nwhere h.person_' at line 2")
+
+# 2022-11-10 23:51:40.618117
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`) separator '\r\n')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
++-------------------+----------------------------------------------------+
+| Full_name         | orders                                             |
++-------------------+----------------------------------------------------+
+| Даниил Куджо      | 4:2 - half vip\r\n2:5 - half vip\r\n3:1 - vip      |
+| Джозеф Джостар    | <null>                                             |
+| Джолин Агацума    | 6:1 - standart                                     |
+| Джолин Лайт       | <null>                                             |
+| Джонатан Ленгли   | 1:3 - half vip\r\n4:3 - half vip                   |
+| Джонатан Макинами | 3:2 - half vip                                     |
+| Джонатан Почитта  | <null>                                             |
+| Джорно Йошикаге   | <null>                                             |
+| Дива Агацума      | 4:1 - standart\r\n6:1 - standart                   |
+| Дива Почитта      | 5:1 - standart                                     |
+| Жоржи Мухаммед    | 1:4 - standart\r\n5:1 - standart\r\n4:4 - standart |
+| Илья Амане        | <null>                                             |
+| Илья Лайт         | <null>                                             |
+| Кира Мухаммед     | 2:4 - half vip                                     |
+| Константин Амане  | <null>                                             |
+| Мива Макинами     | 2:3 - half vip                                     |
+| Роуз Геноза       | 1:1 - standart                                     |
+| Роуз Ленгли       | 3:3 - half vip\r\n5:1 - standart                   |
+| Синдзи Почитта    | <null>                                             |
+| Фэй Джостар       | 1:3 - half vip\r\n1:4 - standart                   |
++-------------------+----------------------------------------------------+
+20 rows in set
+Time: 0.032s
+
+# 2022-11-10 23:51:52.337446
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`) separator '')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
++-------------------+--------------------------------------------+
+| Full_name         | orders                                     |
++-------------------+--------------------------------------------+
+| Даниил Куджо      | 4:2 - half vip2:5 - half vip3:1 - vip      |
+| Джозеф Джостар    | <null>                                     |
+| Джолин Агацума    | 6:1 - standart                             |
+| Джолин Лайт       | <null>                                     |
+| Джонатан Ленгли   | 1:3 - half vip4:3 - half vip               |
+| Джонатан Макинами | 3:2 - half vip                             |
+| Джонатан Почитта  | <null>                                     |
+| Джорно Йошикаге   | <null>                                     |
+| Дива Агацума      | 4:1 - standart6:1 - standart               |
+| Дива Почитта      | 5:1 - standart                             |
+| Жоржи Мухаммед    | 1:4 - standart5:1 - standart4:4 - standart |
+| Илья Амане        | <null>                                     |
+| Илья Лайт         | <null>                                     |
+| Кира Мухаммед     | 2:4 - half vip                             |
+| Константин Амане  | <null>                                     |
+| Мива Макинами     | 2:3 - half vip                             |
+| Роуз Геноза       | 1:1 - standart                             |
+| Роуз Ленгли       | 3:3 - half vip5:1 - standart               |
+| Синдзи Почитта    | <null>                                     |
+| Фэй Джостар       | 1:3 - half vip1:4 - standart               |
++-------------------+--------------------------------------------+
+20 rows in set
+Time: 0.027s
+
+# 2022-11-10 23:52:06.212843
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`) separator '
+')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
++-------------------+------------------------------------------------+
+| Full_name         | orders                                         |
++-------------------+------------------------------------------------+
+| Даниил Куджо      | 4:2 - half vip\n2:5 - half vip\n3:1 - vip      |
+| Джозеф Джостар    | <null>                                         |
+| Джолин Агацума    | 6:1 - standart                                 |
+| Джолин Лайт       | <null>                                         |
+| Джонатан Ленгли   | 1:3 - half vip\n4:3 - half vip                 |
+| Джонатан Макинами | 3:2 - half vip                                 |
+| Джонатан Почитта  | <null>                                         |
+| Джорно Йошикаге   | <null>                                         |
+| Дива Агацума      | 4:1 - standart\n6:1 - standart                 |
+| Дива Почитта      | 5:1 - standart                                 |
+| Жоржи Мухаммед    | 1:4 - standart\n5:1 - standart\n4:4 - standart |
+| Илья Амане        | <null>                                         |
+| Илья Лайт         | <null>                                         |
+| Кира Мухаммед     | 2:4 - half vip                                 |
+| Константин Амане  | <null>                                         |
+| Мива Макинами     | 2:3 - half vip                                 |
+| Роуз Геноза       | 1:1 - standart                                 |
+| Роуз Ленгли       | 3:3 - half vip\n5:1 - standart                 |
+| Синдзи Почитта    | <null>                                         |
+| Фэй Джостар       | 1:3 - half vip\n1:4 - standart                 |
++-------------------+------------------------------------------------+
+20 rows in set
+Time: 0.025s
+
+# 2022-11-10 23:59:19.752139
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`) separator '\\n')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
++-------------------+------------------------------------------------+
+| Full_name         | orders                                         |
++-------------------+------------------------------------------------+
+| Даниил Куджо      | 4:2 - half vip\n2:5 - half vip\n3:1 - vip      |
+| Джозеф Джостар    | <null>                                         |
+| Джолин Агацума    | 6:1 - standart                                 |
+| Джолин Лайт       | <null>                                         |
+| Джонатан Ленгли   | 1:3 - half vip\n4:3 - half vip                 |
+| Джонатан Макинами | 3:2 - half vip                                 |
+| Джонатан Почитта  | <null>                                         |
+| Джорно Йошикаге   | <null>                                         |
+| Дива Агацума      | 4:1 - standart\n6:1 - standart                 |
+| Дива Почитта      | 5:1 - standart                                 |
+| Жоржи Мухаммед    | 1:4 - standart\n5:1 - standart\n4:4 - standart |
+| Илья Амане        | <null>                                         |
+| Илья Лайт         | <null>                                         |
+| Кира Мухаммед     | 2:4 - half vip                                 |
+| Константин Амане  | <null>                                         |
+| Мива Макинами     | 2:3 - half vip                                 |
+| Роуз Геноза       | 1:1 - standart                                 |
+| Роуз Ленгли       | 3:3 - half vip\n5:1 - standart                 |
+| Синдзи Почитта    | <null>                                         |
+| Фэй Джостар       | 1:3 - half vip\n1:4 - standart                 |
++-------------------+------------------------------------------------+
+20 rows in set
+Time: 0.023s
+
+# 2022-11-11 00:03:00.286091
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`, '\n') separator '\n')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
++-------------------+------------------------------------------------------+
+| Full_name         | orders                                               |
++-------------------+------------------------------------------------------+
+| Даниил Куджо      | 4:2 - half vip\n\n2:5 - half vip\n\n3:1 - vip\n      |
+| Джозеф Джостар    | <null>                                               |
+| Джолин Агацума    | 6:1 - standart\n                                     |
+| Джолин Лайт       | <null>                                               |
+| Джонатан Ленгли   | 1:3 - half vip\n\n4:3 - half vip\n                   |
+| Джонатан Макинами | 3:2 - half vip\n                                     |
+| Джонатан Почитта  | <null>                                               |
+| Джорно Йошикаге   | <null>                                               |
+| Дива Агацума      | 4:1 - standart\n\n6:1 - standart\n                   |
+| Дива Почитта      | 5:1 - standart\n                                     |
+| Жоржи Мухаммед    | 1:4 - standart\n\n5:1 - standart\n\n4:4 - standart\n |
+| Илья Амане        | <null>                                               |
+| Илья Лайт         | <null>                                               |
+| Кира Мухаммед     | 2:4 - half vip\n                                     |
+| Константин Амане  | <null>                                               |
+| Мива Макинами     | 2:3 - half vip\n                                     |
+| Роуз Геноза       | 1:1 - standart\n                                     |
+| Роуз Ленгли       | 3:3 - half vip\n\n5:1 - standart\n                   |
+| Синдзи Почитта    | <null>                                               |
+| Фэй Джостар       | 1:3 - half vip\n\n1:4 - standart\n                   |
++-------------------+------------------------------------------------------+
+20 rows in set
+Time: 0.025s
+
+# 2022-11-11 00:03:42.799316
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`, '\n') 
+separator ' ')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
++-------------------+----------------------------------------------------+
+| Full_name         | orders                                             |
++-------------------+----------------------------------------------------+
+| Даниил Куджо      | 4:2 - half vip\n 2:5 - half vip\n 3:1 - vip\n      |
+| Джозеф Джостар    | <null>                                             |
+| Джолин Агацума    | 6:1 - standart\n                                   |
+| Джолин Лайт       | <null>                                             |
+| Джонатан Ленгли   | 1:3 - half vip\n 4:3 - half vip\n                  |
+| Джонатан Макинами | 3:2 - half vip\n                                   |
+| Джонатан Почитта  | <null>                                             |
+| Джорно Йошикаге   | <null>                                             |
+| Дива Агацума      | 4:1 - standart\n 6:1 - standart\n                  |
+| Дива Почитта      | 5:1 - standart\n                                   |
+| Жоржи Мухаммед    | 1:4 - standart\n 5:1 - standart\n 4:4 - standart\n |
+| Илья Амане        | <null>                                             |
+| Илья Лайт         | <null>                                             |
+| Кира Мухаммед     | 2:4 - half vip\n                                   |
+| Константин Амане  | <null>                                             |
+| Мива Макинами     | 2:3 - half vip\n                                   |
+| Роуз Геноза       | 1:1 - standart\n                                   |
+| Роуз Ленгли       | 3:3 - half vip\n 5:1 - standart\n                  |
+| Синдзи Почитта    | <null>                                             |
+| Фэй Джостар       | 1:3 - half vip\n 1:4 - standart\n                  |
++-------------------+----------------------------------------------------+
+20 rows in set
+Time: 0.018s
+
+# 2022-11-11 00:03:53.304564
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`, \n) 
+separator ' ')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '\\n) \nseparator ' ')\nfrom `HotelOrder` h inner join `Room` r\nusing(room_id)\nwhere' at line 2")
+
+# 2022-11-11 00:04:07.394462
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`, ' \n') 
+separator ' ')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
++-------------------+-------------------------------------------------------+
+| Full_name         | orders                                                |
++-------------------+-------------------------------------------------------+
+| Даниил Куджо      | 4:2 - half vip \n 2:5 - half vip \n 3:1 - vip \n      |
+| Джозеф Джостар    | <null>                                                |
+| Джолин Агацума    | 6:1 - standart \n                                     |
+| Джолин Лайт       | <null>                                                |
+| Джонатан Ленгли   | 1:3 - half vip \n 4:3 - half vip \n                   |
+| Джонатан Макинами | 3:2 - half vip \n                                     |
+| Джонатан Почитта  | <null>                                                |
+| Джорно Йошикаге   | <null>                                                |
+| Дива Агацума      | 4:1 - standart \n 6:1 - standart \n                   |
+| Дива Почитта      | 5:1 - standart \n                                     |
+| Жоржи Мухаммед    | 1:4 - standart \n 5:1 - standart \n 4:4 - standart \n |
+| Илья Амане        | <null>                                                |
+| Илья Лайт         | <null>                                                |
+| Кира Мухаммед     | 2:4 - half vip \n                                     |
+| Константин Амане  | <null>                                                |
+| Мива Макинами     | 2:3 - half vip \n                                     |
+| Роуз Геноза       | 1:1 - standart \n                                     |
+| Роуз Ленгли       | 3:3 - half vip \n 5:1 - standart \n                   |
+| Синдзи Почитта    | <null>                                                |
+| Фэй Джостар       | 1:3 - half vip \n 1:4 - standart \n                   |
++-------------------+-------------------------------------------------------+
+20 rows in set
+Time: 0.019s
+
+# 2022-11-11 00:05:37.392940
+\T ascii
+Changed table format to ascii
+Time: 0.000s
+
+# 2022-11-11 00:05:39.899194
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`, ' \n') 
+separator ' ')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
++-------------------+-------------------------------------------------------+
+| Full_name         | orders                                                |
++-------------------+-------------------------------------------------------+
+| Даниил Куджо      | 4:2 - half vip \n 2:5 - half vip \n 3:1 - vip \n      |
+| Джозеф Джостар    | <null>                                                |
+| Джолин Агацума    | 6:1 - standart \n                                     |
+| Джолин Лайт       | <null>                                                |
+| Джонатан Ленгли   | 1:3 - half vip \n 4:3 - half vip \n                   |
+| Джонатан Макинами | 3:2 - half vip \n                                     |
+| Джонатан Почитта  | <null>                                                |
+| Джорно Йошикаге   | <null>                                                |
+| Дива Агацума      | 4:1 - standart \n 6:1 - standart \n                   |
+| Дива Почитта      | 5:1 - standart \n                                     |
+| Жоржи Мухаммед    | 1:4 - standart \n 5:1 - standart \n 4:4 - standart \n |
+| Илья Амане        | <null>                                                |
+| Илья Лайт         | <null>                                                |
+| Кира Мухаммед     | 2:4 - half vip \n                                     |
+| Константин Амане  | <null>                                                |
+| Мива Макинами     | 2:3 - half vip \n                                     |
+| Роуз Геноза       | 1:1 - standart \n                                     |
+| Роуз Ленгли       | 3:3 - half vip \n 5:1 - standart \n                   |
+| Синдзи Почитта    | <null>                                                |
+| Фэй Джостар       | 1:3 - half vip \n 1:4 - standart \n                   |
++-------------------+-------------------------------------------------------+
+20 rows in set
+Time: 0.017s
+
+# 2022-11-11 00:05:48.706932
+\T csv
+Changed table format to csv
+Time: 0.000s
+
+# 2022-11-11 00:05:50.231809
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`, ' \n') 
+separator ' ')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
+"Full_name","orders"
+"Даниил Куджо","4:2 - half vip 
+ 2:5 - half vip 
+ 3:1 - vip 
+"
+"Джозеф Джостар",""
+"Джолин Агацума","6:1 - standart 
+"
+"Джолин Лайт",""
+"Джонатан Ленгли","1:3 - half vip 
+ 4:3 - half vip 
+"
+"Джонатан Макинами","3:2 - half vip 
+"
+"Джонатан Почитта",""
+"Джорно Йошикаге",""
+"Дива Агацума","4:1 - standart 
+ 6:1 - standart 
+"
+"Дива Почитта","5:1 - standart 
+"
+"Жоржи Мухаммед","1:4 - standart 
+ 5:1 - standart 
+ 4:4 - standart 
+"
+"Илья Амане",""
+"Илья Лайт",""
+"Кира Мухаммед","2:4 - half vip 
+"
+"Константин Амане",""
+"Мива Макинами","2:3 - half vip 
+"
+"Роуз Геноза","1:1 - standart 
+"
+"Роуз Ленгли","3:3 - half vip 
+ 5:1 - standart 
+"
+"Синдзи Почитта",""
+"Фэй Джостар","1:3 - half vip 
+ 1:4 - standart 
+"
+20 rows in set
+Time: 0.006s
+
+# 2022-11-11 00:06:02.851105
+\T csv-tab
+Changed table format to csv-tab
+Time: 0.001s
+
+# 2022-11-11 00:06:11.662772
+select * from `HotelOrder`;
+"DateInfo"	"Price"	"Stars"	"person_id"	"room_id"	"order_id"
+"1999-01-26"	"208037"	"0"	"17"	"20"	"1"
+"2001-06-22"	"467315"	"1"	"9"	"1"	"2"
+"1975-08-11"	"348189"	"3"	"14"	"11"	"3"
+"1990-06-22"	"66062"	"1"	"18"	"19"	"4"
+"2007-08-24"	"198893"	"4"	"8"	"3"	"5"
+"2005-12-02"	"288016"	"5"	"16"	"12"	"6"
+"2000-05-29"	"186019"	"4"	"7"	"16"	"7"
+"1993-06-29"	"14165"	"3"	"6"	"4"	"8"
+"2005-04-14"	"4371"	"3"	"1"	"7"	"9"
+"1997-03-21"	"356811"	"3"	"20"	"3"	"10"
+"2012-07-21"	"451559"	"5"	"13"	"15"	"11"
+"1987-09-20"	"451308"	"4"	"6"	"19"	"12"
+"2007-03-14"	"278408"	"0"	"7"	"9"	"13"
+"1982-05-01"	"456358"	"4"	"20"	"17"	"14"
+"1992-01-13"	"479318"	"2"	"7"	"10"	"15"
+"1982-05-13"	"467683"	"5"	"2"	"8"	"16"
+"1979-04-23"	"212341"	"1"	"6"	"18"	"17"
+"2014-12-07"	"364377"	"4"	"8"	"4"	"18"
+"1989-11-25"	"73321"	"0"	"13"	"20"	"19"
+"2009-02-03"	"13165"	"2"	"16"	"19"	"20"
+20 rows in set
+Time: 0.002s
+
+# 2022-11-11 00:06:23.441261
+\T double
+Changed table format to double
+Time: 0.000s
+
+# 2022-11-11 00:06:28.562322
+select * from `HotelOrder`;
+╔════════════╦════════╦═══════╦═══════════╦═════════╦══════════╗
+║ DateInfo   ║ Price  ║ Stars ║ person_id ║ room_id ║ order_id ║
+╠════════════╬════════╬═══════╬═══════════╬═════════╬══════════╣
+║ 1999-01-26 ║ 208037 ║ 0     ║ 17        ║ 20      ║ 1        ║
+║ 2001-06-22 ║ 467315 ║ 1     ║ 9         ║ 1       ║ 2        ║
+║ 1975-08-11 ║ 348189 ║ 3     ║ 14        ║ 11      ║ 3        ║
+║ 1990-06-22 ║ 66062  ║ 1     ║ 18        ║ 19      ║ 4        ║
+║ 2007-08-24 ║ 198893 ║ 4     ║ 8         ║ 3       ║ 5        ║
+║ 2005-12-02 ║ 288016 ║ 5     ║ 16        ║ 12      ║ 6        ║
+║ 2000-05-29 ║ 186019 ║ 4     ║ 7         ║ 16      ║ 7        ║
+║ 1993-06-29 ║ 14165  ║ 3     ║ 6         ║ 4       ║ 8        ║
+║ 2005-04-14 ║ 4371   ║ 3     ║ 1         ║ 7       ║ 9        ║
+║ 1997-03-21 ║ 356811 ║ 3     ║ 20        ║ 3       ║ 10       ║
+║ 2012-07-21 ║ 451559 ║ 5     ║ 13        ║ 15      ║ 11       ║
+║ 1987-09-20 ║ 451308 ║ 4     ║ 6         ║ 19      ║ 12       ║
+║ 2007-03-14 ║ 278408 ║ 0     ║ 7         ║ 9       ║ 13       ║
+║ 1982-05-01 ║ 456358 ║ 4     ║ 20        ║ 17      ║ 14       ║
+║ 1992-01-13 ║ 479318 ║ 2     ║ 7         ║ 10      ║ 15       ║
+║ 1982-05-13 ║ 467683 ║ 5     ║ 2         ║ 8       ║ 16       ║
+║ 1979-04-23 ║ 212341 ║ 1     ║ 6         ║ 18      ║ 17       ║
+║ 2014-12-07 ║ 364377 ║ 4     ║ 8         ║ 4       ║ 18       ║
+║ 1989-11-25 ║ 73321  ║ 0     ║ 13        ║ 20      ║ 19       ║
+║ 2009-02-03 ║ 13165  ║ 2     ║ 16        ║ 19      ║ 20       ║
+╚════════════╩════════╩═══════╩═══════════╩═════════╩══════════╝
+20 rows in set
+Time: 0.039s
+
+# 2022-11-11 00:06:38.066001
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`, ' \n') 
+separator ' ')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
+╔═══════════════════╦═══════════════════════════════════════════════════════╗
+║ Full_name         ║ orders                                                ║
+╠═══════════════════╬═══════════════════════════════════════════════════════╣
+║ Даниил Куджо      ║ 4:2 - half vip \n 2:5 - half vip \n 3:1 - vip \n      ║
+║ Джозеф Джостар    ║ <null>                                                ║
+║ Джолин Агацума    ║ 6:1 - standart \n                                     ║
+║ Джолин Лайт       ║ <null>                                                ║
+║ Джонатан Ленгли   ║ 1:3 - half vip \n 4:3 - half vip \n                   ║
+║ Джонатан Макинами ║ 3:2 - half vip \n                                     ║
+║ Джонатан Почитта  ║ <null>                                                ║
+║ Джорно Йошикаге   ║ <null>                                                ║
+║ Дива Агацума      ║ 4:1 - standart \n 6:1 - standart \n                   ║
+║ Дива Почитта      ║ 5:1 - standart \n                                     ║
+║ Жоржи Мухаммед    ║ 1:4 - standart \n 5:1 - standart \n 4:4 - standart \n ║
+║ Илья Амане        ║ <null>                                                ║
+║ Илья Лайт         ║ <null>                                                ║
+║ Кира Мухаммед     ║ 2:4 - half vip \n                                     ║
+║ Константин Амане  ║ <null>                                                ║
+║ Мива Макинами     ║ 2:3 - half vip \n                                     ║
+║ Роуз Геноза       ║ 1:1 - standart \n                                     ║
+║ Роуз Ленгли       ║ 3:3 - half vip \n 5:1 - standart \n                   ║
+║ Синдзи Почитта    ║ <null>                                                ║
+║ Фэй Джостар       ║ 1:3 - half vip \n 1:4 - standart \n                   ║
+╚═══════════════════╩═══════════════════════════════════════════════════════╝
+20 rows in set
+Time: 0.024s
+
+# 2022-11-11 00:06:47.730913
+\T fancy_grid
+Changed table format to fancy_grid
+Time: 0.000s
+
+# 2022-11-11 00:06:51.604328
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`, ' \n') 
+separator ' ')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
+╒═══════════════════╤══════════════════╕
+│ Full_name         │ orders           │
+╞═══════════════════╪══════════════════╡
+│ Даниил Куджо      │ 4:2 - half vip   │
+│                   │  2:5 - half vip  │
+│                   │  3:1 - vip       │
+├───────────────────┼──────────────────┤
+│ Джозеф Джостар    │ <null>           │
+├───────────────────┼──────────────────┤
+│ Джолин Агацума    │ 6:1 - standart   │
+├───────────────────┼──────────────────┤
+│ Джолин Лайт       │ <null>           │
+├───────────────────┼──────────────────┤
+│ Джонатан Ленгли   │ 1:3 - half vip   │
+│                   │  4:3 - half vip  │
+├───────────────────┼──────────────────┤
+│ Джонатан Макинами │ 3:2 - half vip   │
+├───────────────────┼──────────────────┤
+│ Джонатан Почитта  │ <null>           │
+├───────────────────┼──────────────────┤
+│ Джорно Йошикаге   │ <null>           │
+├───────────────────┼──────────────────┤
+│ Дива Агацума      │ 4:1 - standart   │
+│                   │  6:1 - standart  │
+├───────────────────┼──────────────────┤
+│ Дива Почитта      │ 5:1 - standart   │
+├───────────────────┼──────────────────┤
+│ Жоржи Мухаммед    │ 1:4 - standart   │
+│                   │  5:1 - standart  │
+│                   │  4:4 - standart  │
+├───────────────────┼──────────────────┤
+│ Илья Амане        │ <null>           │
+├───────────────────┼──────────────────┤
+│ Илья Лайт         │ <null>           │
+├───────────────────┼──────────────────┤
+│ Кира Мухаммед     │ 2:4 - half vip   │
+├───────────────────┼──────────────────┤
+│ Константин Амане  │ <null>           │
+├───────────────────┼──────────────────┤
+│ Мива Макинами     │ 2:3 - half vip   │
+├───────────────────┼──────────────────┤
+│ Роуз Геноза       │ 1:1 - standart   │
+├───────────────────┼──────────────────┤
+│ Роуз Ленгли       │ 3:3 - half vip   │
+│                   │  5:1 - standart  │
+├───────────────────┼──────────────────┤
+│ Синдзи Почитта    │ <null>           │
+├───────────────────┼──────────────────┤
+│ Фэй Джостар       │ 1:3 - half vip   │
+│                   │  1:4 - standart  │
+╘═══════════════════╧══════════════════╛
+20 rows in set
+Time: 0.021s
+
+# 2022-11-11 00:07:18.682590
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`, '\n') 
+separator '')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
+╒═══════════════════╤════════════════╕
+│ Full_name         │ orders         │
+╞═══════════════════╪════════════════╡
+│ Даниил Куджо      │ 4:2 - half vip │
+│                   │ 2:5 - half vip │
+│                   │ 3:1 - vip      │
+├───────────────────┼────────────────┤
+│ Джозеф Джостар    │ <null>         │
+├───────────────────┼────────────────┤
+│ Джолин Агацума    │ 6:1 - standart │
+├───────────────────┼────────────────┤
+│ Джолин Лайт       │ <null>         │
+├───────────────────┼────────────────┤
+│ Джонатан Ленгли   │ 1:3 - half vip │
+│                   │ 4:3 - half vip │
+├───────────────────┼────────────────┤
+│ Джонатан Макинами │ 3:2 - half vip │
+├───────────────────┼────────────────┤
+│ Джонатан Почитта  │ <null>         │
+├───────────────────┼────────────────┤
+│ Джорно Йошикаге   │ <null>         │
+├───────────────────┼────────────────┤
+│ Дива Агацума      │ 4:1 - standart │
+│                   │ 6:1 - standart │
+├───────────────────┼────────────────┤
+│ Дива Почитта      │ 5:1 - standart │
+├───────────────────┼────────────────┤
+│ Жоржи Мухаммед    │ 1:4 - standart │
+│                   │ 5:1 - standart │
+│                   │ 4:4 - standart │
+├───────────────────┼────────────────┤
+│ Илья Амане        │ <null>         │
+├───────────────────┼────────────────┤
+│ Илья Лайт         │ <null>         │
+├───────────────────┼────────────────┤
+│ Кира Мухаммед     │ 2:4 - half vip │
+├───────────────────┼────────────────┤
+│ Константин Амане  │ <null>         │
+├───────────────────┼────────────────┤
+│ Мива Макинами     │ 2:3 - half vip │
+├───────────────────┼────────────────┤
+│ Роуз Геноза       │ 1:1 - standart │
+├───────────────────┼────────────────┤
+│ Роуз Ленгли       │ 3:3 - half vip │
+│                   │ 5:1 - standart │
+├───────────────────┼────────────────┤
+│ Синдзи Почитта    │ <null>         │
+├───────────────────┼────────────────┤
+│ Фэй Джостар       │ 1:3 - half vip │
+│                   │ 1:4 - standart │
+╘═══════════════════╧════════════════╛
+20 rows in set
+Time: 0.025s
+
+# 2022-11-11 00:08:46.876994
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char), ' - ', r.`Class`, ' - ', h.`Price`, '\n') 
+separator '')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
+╒═══════════════════╤═════════════════════════╕
+│ Full_name         │ orders                  │
+╞═══════════════════╪═════════════════════════╡
+│ Даниил Куджо      │ 4:2 - half vip - 186019 │
+│                   │ 2:5 - half vip - 278408 │
+│                   │ 3:1 - vip - 479318      │
+├───────────────────┼─────────────────────────┤
+│ Джозеф Джостар    │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Джолин Агацума    │ 6:1 - standart - 208037 │
+├───────────────────┼─────────────────────────┤
+│ Джолин Лайт       │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Джонатан Ленгли   │ 1:3 - half vip - 356811 │
+│                   │ 4:3 - half vip - 456358 │
+├───────────────────┼─────────────────────────┤
+│ Джонатан Макинами │ 3:2 - half vip - 348189 │
+├───────────────────┼─────────────────────────┤
+│ Джонатан Почитта  │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Джорно Йошикаге   │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Дива Агацума      │ 4:1 - standart - 451559 │
+│                   │ 6:1 - standart - 73321  │
+├───────────────────┼─────────────────────────┤
+│ Дива Почитта      │ 5:1 - standart - 66062  │
+├───────────────────┼─────────────────────────┤
+│ Жоржи Мухаммед    │ 1:4 - standart - 14165  │
+│                   │ 5:1 - standart - 451308 │
+│                   │ 4:4 - standart - 212341 │
+├───────────────────┼─────────────────────────┤
+│ Илья Амане        │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Илья Лайт         │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Кира Мухаммед     │ 2:4 - half vip - 467683 │
+├───────────────────┼─────────────────────────┤
+│ Константин Амане  │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Мива Макинами     │ 2:3 - half vip - 4371   │
+├───────────────────┼─────────────────────────┤
+│ Роуз Геноза       │ 1:1 - standart - 467315 │
+├───────────────────┼─────────────────────────┤
+│ Роуз Ленгли       │ 3:3 - half vip - 288016 │
+│                   │ 5:1 - standart - 13165  │
+├───────────────────┼─────────────────────────┤
+│ Синдзи Почитта    │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Фэй Джостар       │ 1:3 - half vip - 198893 │
+│                   │ 1:4 - standart - 364377 │
+╘═══════════════════╧═════════════════════════╛
+20 rows in set
+Time: 0.024s
+
+# 2022-11-11 00:09:03.960331
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char),
+' - ', r.`Class`, ' - ', h.`Price`, '\n') 
+separator '')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
+╒═══════════════════╤═════════════════════════╕
+│ Full_name         │ orders                  │
+╞═══════════════════╪═════════════════════════╡
+│ Даниил Куджо      │ 4:2 - half vip - 186019 │
+│                   │ 2:5 - half vip - 278408 │
+│                   │ 3:1 - vip - 479318      │
+├───────────────────┼─────────────────────────┤
+│ Джозеф Джостар    │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Джолин Агацума    │ 6:1 - standart - 208037 │
+├───────────────────┼─────────────────────────┤
+│ Джолин Лайт       │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Джонатан Ленгли   │ 1:3 - half vip - 356811 │
+│                   │ 4:3 - half vip - 456358 │
+├───────────────────┼─────────────────────────┤
+│ Джонатан Макинами │ 3:2 - half vip - 348189 │
+├───────────────────┼─────────────────────────┤
+│ Джонатан Почитта  │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Джорно Йошикаге   │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Дива Агацума      │ 4:1 - standart - 451559 │
+│                   │ 6:1 - standart - 73321  │
+├───────────────────┼─────────────────────────┤
+│ Дива Почитта      │ 5:1 - standart - 66062  │
+├───────────────────┼─────────────────────────┤
+│ Жоржи Мухаммед    │ 1:4 - standart - 14165  │
+│                   │ 5:1 - standart - 451308 │
+│                   │ 4:4 - standart - 212341 │
+├───────────────────┼─────────────────────────┤
+│ Илья Амане        │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Илья Лайт         │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Кира Мухаммед     │ 2:4 - half vip - 467683 │
+├───────────────────┼─────────────────────────┤
+│ Константин Амане  │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Мива Макинами     │ 2:3 - half vip - 4371   │
+├───────────────────┼─────────────────────────┤
+│ Роуз Геноза       │ 1:1 - standart - 467315 │
+├───────────────────┼─────────────────────────┤
+│ Роуз Ленгли       │ 3:3 - half vip - 288016 │
+│                   │ 5:1 - standart - 13165  │
+├───────────────────┼─────────────────────────┤
+│ Синдзи Почитта    │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Фэй Джостар       │ 1:3 - half vip - 198893 │
+│                   │ 1:4 - standart - 364377 │
+╘═══════════════════╧═════════════════════════╛
+20 rows in set
+Time: 0.019s
+
+# 2022-11-11 00:12:38.362147
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char),
+' - ', r.`Class`, ' - ', h.`Price`, '\n') 
+order by r.Floor, r.`Number`, r.`Class`, h.`Price` separator '')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id order by r.Floor, r.`Number`, r.`Class`) as `orders`
+from `People` p
+order by p.`Full_name`;
+╒═══════════════════╤═════════════════════════╕
+│ Full_name         │ orders                  │
+╞═══════════════════╪═════════════════════════╡
+│ Даниил Куджо      │ 2:5 - half vip - 278408 │
+│                   │ 3:1 - vip - 479318      │
+│                   │ 4:2 - half vip - 186019 │
+├───────────────────┼─────────────────────────┤
+│ Джозеф Джостар    │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Джолин Агацума    │ 6:1 - standart - 208037 │
+├───────────────────┼─────────────────────────┤
+│ Джолин Лайт       │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Джонатан Ленгли   │ 1:3 - half vip - 356811 │
+│                   │ 4:3 - half vip - 456358 │
+├───────────────────┼─────────────────────────┤
+│ Джонатан Макинами │ 3:2 - half vip - 348189 │
+├───────────────────┼─────────────────────────┤
+│ Джонатан Почитта  │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Джорно Йошикаге   │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Дива Агацума      │ 4:1 - standart - 451559 │
+│                   │ 6:1 - standart - 73321  │
+├───────────────────┼─────────────────────────┤
+│ Дива Почитта      │ 5:1 - standart - 66062  │
+├───────────────────┼─────────────────────────┤
+│ Жоржи Мухаммед    │ 1:4 - standart - 14165  │
+│                   │ 4:4 - standart - 212341 │
+│                   │ 5:1 - standart - 451308 │
+├───────────────────┼─────────────────────────┤
+│ Илья Амане        │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Илья Лайт         │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Кира Мухаммед     │ 2:4 - half vip - 467683 │
+├───────────────────┼─────────────────────────┤
+│ Константин Амане  │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Мива Макинами     │ 2:3 - half vip - 4371   │
+├───────────────────┼─────────────────────────┤
+│ Роуз Геноза       │ 1:1 - standart - 467315 │
+├───────────────────┼─────────────────────────┤
+│ Роуз Ленгли       │ 3:3 - half vip - 288016 │
+│                   │ 5:1 - standart - 13165  │
+├───────────────────┼─────────────────────────┤
+│ Синдзи Почитта    │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Фэй Джостар       │ 1:3 - half vip - 198893 │
+│                   │ 1:4 - standart - 364377 │
+╘═══════════════════╧═════════════════════════╛
+20 rows in set
+Time: 0.043s
+
+# 2022-11-11 00:13:15.196585
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char),
+' - ', r.`Class`, ' - ', h.`Price`, '\n') 
+order by r.Floor, r.`Number`, r.`Class`, h.`Price` separator '')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id) as `orders`
+from `People` p
+order by p.`Full_name`;
+╒═══════════════════╤═════════════════════════╕
+│ Full_name         │ orders                  │
+╞═══════════════════╪═════════════════════════╡
+│ Даниил Куджо      │ 2:5 - half vip - 278408 │
+│                   │ 3:1 - vip - 479318      │
+│                   │ 4:2 - half vip - 186019 │
+├───────────────────┼─────────────────────────┤
+│ Джозеф Джостар    │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Джолин Агацума    │ 6:1 - standart - 208037 │
+├───────────────────┼─────────────────────────┤
+│ Джолин Лайт       │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Джонатан Ленгли   │ 1:3 - half vip - 356811 │
+│                   │ 4:3 - half vip - 456358 │
+├───────────────────┼─────────────────────────┤
+│ Джонатан Макинами │ 3:2 - half vip - 348189 │
+├───────────────────┼─────────────────────────┤
+│ Джонатан Почитта  │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Джорно Йошикаге   │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Дива Агацума      │ 4:1 - standart - 451559 │
+│                   │ 6:1 - standart - 73321  │
+├───────────────────┼─────────────────────────┤
+│ Дива Почитта      │ 5:1 - standart - 66062  │
+├───────────────────┼─────────────────────────┤
+│ Жоржи Мухаммед    │ 1:4 - standart - 14165  │
+│                   │ 4:4 - standart - 212341 │
+│                   │ 5:1 - standart - 451308 │
+├───────────────────┼─────────────────────────┤
+│ Илья Амане        │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Илья Лайт         │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Кира Мухаммед     │ 2:4 - half vip - 467683 │
+├───────────────────┼─────────────────────────┤
+│ Константин Амане  │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Мива Макинами     │ 2:3 - half vip - 4371   │
+├───────────────────┼─────────────────────────┤
+│ Роуз Геноза       │ 1:1 - standart - 467315 │
+├───────────────────┼─────────────────────────┤
+│ Роуз Ленгли       │ 3:3 - half vip - 288016 │
+│                   │ 5:1 - standart - 13165  │
+├───────────────────┼─────────────────────────┤
+│ Синдзи Почитта    │ <null>                  │
+├───────────────────┼─────────────────────────┤
+│ Фэй Джостар       │ 1:3 - half vip - 198893 │
+│                   │ 1:4 - standart - 364377 │
+╘═══════════════════╧═════════════════════════╛
+20 rows in set
+Time: 0.020s
+
+# 2022-11-11 00:24:35.321682
+quit;
+Goodbye!
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-11 00:28:45.555267
+use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.001s
+
+# 2022-11-11 00:29:39.882070
+select concat(Stars) from `HotelOrder`;
++---------------+
+| concat(Stars) |
++---------------+
+| 0             |
+| 1             |
+| 3             |
+| 1             |
+| 4             |
+| 5             |
+| 4             |
+| 3             |
+| 3             |
+| 3             |
+| 5             |
+| 4             |
+| 0             |
+| 4             |
+| 2             |
+| 5             |
+| 1             |
+| 4             |
+| 0             |
+| 2             |
++---------------+
+20 rows in set
+Time: 0.020s
+
+# 2022-11-11 00:30:18.477607
+select concat(convert(Stars, char)) from `HotelOrder`;
++------------------------------+
+| concat(convert(Stars, char)) |
++------------------------------+
+| 0                            |
+| 1                            |
+| 3                            |
+| 1                            |
+| 4                            |
+| 5                            |
+| 4                            |
+| 3                            |
+| 3                            |
+| 3                            |
+| 5                            |
+| 4                            |
+| 0                            |
+| 4                            |
+| 2                            |
+| 5                            |
+| 1                            |
+| 4                            |
+| 0                            |
+| 2                            |
++------------------------------+
+20 rows in set
+Time: 0.014s
+
+# 2022-11-11 00:30:37.995138
+select concat(convert(`HotelOrder`.`Stars`, char)) from `HotelOrder`;
++---------------------------------------------+
+| concat(convert(`HotelOrder`.`Stars`, char)) |
++---------------------------------------------+
+| 0                                           |
+| 1                                           |
+| 3                                           |
+| 1                                           |
+| 4                                           |
+| 5                                           |
+| 4                                           |
+| 3                                           |
+| 3                                           |
+| 3                                           |
+| 5                                           |
+| 4                                           |
+| 0                                           |
+| 4                                           |
+| 2                                           |
+| 5                                           |
+| 1                                           |
+| 4                                           |
+| 0                                           |
+| 2                                           |
++---------------------------------------------+
+20 rows in set
+Time: 0.014s
+
+# 2022-11-11 00:30:50.353904
+select concat(convert(`HotelOrder`.`Stars`, char)) as abc from `HotelOrder`;
++-----+
+| abc |
++-----+
+| 0   |
+| 1   |
+| 3   |
+| 1   |
+| 4   |
+| 5   |
+| 4   |
+| 3   |
+| 3   |
+| 3   |
+| 5   |
+| 4   |
+| 0   |
+| 4   |
+| 2   |
+| 5   |
+| 1   |
+| 4   |
+| 0   |
+| 2   |
++-----+
+20 rows in set
+Time: 0.015s
+
+# 2022-11-11 00:51:19.126003
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char),
+' - ', r.`Class`, ' - ', h.`Price`, ' - stars = ', h.`Stars`, '\n') 
+order by r.Floor, r.`Number`, r.`Class`, h.`Price` separator '')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id) as `orders`
+from `People` p
+order by p.`Full_name`;
++-------------------+----------------------------------------------------------------------------------------------------------------+
+| Full_name         | orders                                                                                                         |
++-------------------+----------------------------------------------------------------------------------------------------------------+
+| Даниил Куджо      | 2:5 - half vip - 278408 - stars = 0\n3:1 - vip - 479318 - stars = 2\n4:2 - half vip - 186019 - stars = 4\n     |
+| Джозеф Джостар    | <null>                                                                                                         |
+| Джолин Агацума    | 6:1 - standart - 208037 - stars = 0\n                                                                          |
+| Джолин Лайт       | <null>                                                                                                         |
+| Джонатан Ленгли   | 1:3 - half vip - 356811 - stars = 3\n4:3 - half vip - 456358 - stars = 4\n                                     |
+| Джонатан Макинами | 3:2 - half vip - 348189 - stars = 3\n                                                                          |
+| Джонатан Почитта  | <null>                                                                                                         |
+| Джорно Йошикаге   | <null>                                                                                                         |
+| Дива Агацума      | 4:1 - standart - 451559 - stars = 5\n6:1 - standart - 73321 - stars = 0\n                                      |
+| Дива Почитта      | 5:1 - standart - 66062 - stars = 1\n                                                                           |
+| Жоржи Мухаммед    | 1:4 - standart - 14165 - stars = 3\n4:4 - standart - 212341 - stars = 1\n5:1 - standart - 451308 - stars = 4\n |
+| Илья Амане        | <null>                                                                                                         |
+| Илья Лайт         | <null>                                                                                                         |
+| Кира Мухаммед     | 2:4 - half vip - 467683 - stars = 5\n                                                                          |
+| Константин Амане  | <null>                                                                                                         |
+| Мива Макинами     | 2:3 - half vip - 4371 - stars = 3\n                                                                            |
+| Роуз Геноза       | 1:1 - standart - 467315 - stars = 1\n                                                                          |
+| Роуз Ленгли       | 3:3 - half vip - 288016 - stars = 5\n5:1 - standart - 13165 - stars = 2\n                                      |
+| Синдзи Почитта    | <null>                                                                                                         |
+| Фэй Джостар       | 1:3 - half vip - 198893 - stars = 4\n1:4 - standart - 364377 - stars = 4\n                                     |
++-------------------+----------------------------------------------------------------------------------------------------------------+
+20 rows in set
+Time: 0.023s
+
+# 2022-11-11 00:51:27.130742
+\T fancy_grid
+Changed table format to fancy_grid
+Time: 0.000s
+
+# 2022-11-11 00:51:29.301930
+select `Full_name`,
+(select group_concat(concat(convert(r.`Floor`, char), ':', convert(r.`Number`, char),
+' - ', r.`Class`, ' - ', h.`Price`, ' - stars = ', h.`Stars`, '\n') 
+order by r.Floor, r.`Number`, r.`Class`, h.`Price` separator '')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id) as `orders`
+from `People` p
+order by p.`Full_name`;
+╒═══════════════════╤═════════════════════════════════════╕
+│ Full_name         │ orders                              │
+╞═══════════════════╪═════════════════════════════════════╡
+│ Даниил Куджо      │ 2:5 - half vip - 278408 - stars = 0 │
+│                   │ 3:1 - vip - 479318 - stars = 2      │
+│                   │ 4:2 - half vip - 186019 - stars = 4 │
+├───────────────────┼─────────────────────────────────────┤
+│ Джозеф Джостар    │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Джолин Агацума    │ 6:1 - standart - 208037 - stars = 0 │
+├───────────────────┼─────────────────────────────────────┤
+│ Джолин Лайт       │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Джонатан Ленгли   │ 1:3 - half vip - 356811 - stars = 3 │
+│                   │ 4:3 - half vip - 456358 - stars = 4 │
+├───────────────────┼─────────────────────────────────────┤
+│ Джонатан Макинами │ 3:2 - half vip - 348189 - stars = 3 │
+├───────────────────┼─────────────────────────────────────┤
+│ Джонатан Почитта  │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Джорно Йошикаге   │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Дива Агацума      │ 4:1 - standart - 451559 - stars = 5 │
+│                   │ 6:1 - standart - 73321 - stars = 0  │
+├───────────────────┼─────────────────────────────────────┤
+│ Дива Почитта      │ 5:1 - standart - 66062 - stars = 1  │
+├───────────────────┼─────────────────────────────────────┤
+│ Жоржи Мухаммед    │ 1:4 - standart - 14165 - stars = 3  │
+│                   │ 4:4 - standart - 212341 - stars = 1 │
+│                   │ 5:1 - standart - 451308 - stars = 4 │
+├───────────────────┼─────────────────────────────────────┤
+│ Илья Амане        │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Илья Лайт         │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Кира Мухаммед     │ 2:4 - half vip - 467683 - stars = 5 │
+├───────────────────┼─────────────────────────────────────┤
+│ Константин Амане  │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Мива Макинами     │ 2:3 - half vip - 4371 - stars = 3   │
+├───────────────────┼─────────────────────────────────────┤
+│ Роуз Геноза       │ 1:1 - standart - 467315 - stars = 1 │
+├───────────────────┼─────────────────────────────────────┤
+│ Роуз Ленгли       │ 3:3 - half vip - 288016 - stars = 5 │
+│                   │ 5:1 - standart - 13165 - stars = 2  │
+├───────────────────┼─────────────────────────────────────┤
+│ Синдзи Почитта    │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Фэй Джостар       │ 1:3 - half vip - 198893 - stars = 4 │
+│                   │ 1:4 - standart - 364377 - stars = 4 │
+╘═══════════════════╧═════════════════════════════════════╛
+20 rows in set
+Time: 0.032s
+
+# 2022-11-11 00:52:03.184312
+select `Full_name`,
+(select group_concat(concat(r.`Floor`, ':', r.`Number`,
+' - ', r.`Class`, ' - ', h.`Price`, ' - stars = ', h.`Stars`, '\n') 
+order by r.Floor, r.`Number`, r.`Class`, h.`Price` separator '')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id) as `orders`
+from `People` p
+order by p.`Full_name`;
+╒═══════════════════╤═════════════════════════════════════╕
+│ Full_name         │ orders                              │
+╞═══════════════════╪═════════════════════════════════════╡
+│ Даниил Куджо      │ 2:5 - half vip - 278408 - stars = 0 │
+│                   │ 3:1 - vip - 479318 - stars = 2      │
+│                   │ 4:2 - half vip - 186019 - stars = 4 │
+├───────────────────┼─────────────────────────────────────┤
+│ Джозеф Джостар    │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Джолин Агацума    │ 6:1 - standart - 208037 - stars = 0 │
+├───────────────────┼─────────────────────────────────────┤
+│ Джолин Лайт       │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Джонатан Ленгли   │ 1:3 - half vip - 356811 - stars = 3 │
+│                   │ 4:3 - half vip - 456358 - stars = 4 │
+├───────────────────┼─────────────────────────────────────┤
+│ Джонатан Макинами │ 3:2 - half vip - 348189 - stars = 3 │
+├───────────────────┼─────────────────────────────────────┤
+│ Джонатан Почитта  │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Джорно Йошикаге   │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Дива Агацума      │ 4:1 - standart - 451559 - stars = 5 │
+│                   │ 6:1 - standart - 73321 - stars = 0  │
+├───────────────────┼─────────────────────────────────────┤
+│ Дива Почитта      │ 5:1 - standart - 66062 - stars = 1  │
+├───────────────────┼─────────────────────────────────────┤
+│ Жоржи Мухаммед    │ 1:4 - standart - 14165 - stars = 3  │
+│                   │ 4:4 - standart - 212341 - stars = 1 │
+│                   │ 5:1 - standart - 451308 - stars = 4 │
+├───────────────────┼─────────────────────────────────────┤
+│ Илья Амане        │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Илья Лайт         │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Кира Мухаммед     │ 2:4 - half vip - 467683 - stars = 5 │
+├───────────────────┼─────────────────────────────────────┤
+│ Константин Амане  │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Мива Макинами     │ 2:3 - half vip - 4371 - stars = 3   │
+├───────────────────┼─────────────────────────────────────┤
+│ Роуз Геноза       │ 1:1 - standart - 467315 - stars = 1 │
+├───────────────────┼─────────────────────────────────────┤
+│ Роуз Ленгли       │ 3:3 - half vip - 288016 - stars = 5 │
+│                   │ 5:1 - standart - 13165 - stars = 2  │
+├───────────────────┼─────────────────────────────────────┤
+│ Синдзи Почитта    │ <null>                              │
+├───────────────────┼─────────────────────────────────────┤
+│ Фэй Джостар       │ 1:3 - half vip - 198893 - stars = 4 │
+│                   │ 1:4 - standart - 364377 - stars = 4 │
+╘═══════════════════╧═════════════════════════════════════╛
+20 rows in set
+Time: 0.047s
+
+# 2022-11-11 00:52:53.974538
+select `Full_name`,
+(select group_concat(concat(r.`Floor`, ':', r.`Number`,
+' - ', r.`Class`, ' - ', h.`Price`, ' - rating = ', h.`Stars`, '\n') 
+order by r.Floor, r.`Number`, r.`Class`, h.`Price` separator '')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id) as `orders`
+from `People` p
+order by p.`Full_name`;
+╒═══════════════════╤══════════════════════════════════════╕
+│ Full_name         │ orders                               │
+╞═══════════════════╪══════════════════════════════════════╡
+│ Даниил Куджо      │ 2:5 - half vip - 278408 - rating = 0 │
+│                   │ 3:1 - vip - 479318 - rating = 2      │
+│                   │ 4:2 - half vip - 186019 - rating = 4 │
+├───────────────────┼──────────────────────────────────────┤
+│ Джозеф Джостар    │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Джолин Агацума    │ 6:1 - standart - 208037 - rating = 0 │
+├───────────────────┼──────────────────────────────────────┤
+│ Джолин Лайт       │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Джонатан Ленгли   │ 1:3 - half vip - 356811 - rating = 3 │
+│                   │ 4:3 - half vip - 456358 - rating = 4 │
+├───────────────────┼──────────────────────────────────────┤
+│ Джонатан Макинами │ 3:2 - half vip - 348189 - rating = 3 │
+├───────────────────┼──────────────────────────────────────┤
+│ Джонатан Почитта  │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Джорно Йошикаге   │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Дива Агацума      │ 4:1 - standart - 451559 - rating = 5 │
+│                   │ 6:1 - standart - 73321 - rating = 0  │
+├───────────────────┼──────────────────────────────────────┤
+│ Дива Почитта      │ 5:1 - standart - 66062 - rating = 1  │
+├───────────────────┼──────────────────────────────────────┤
+│ Жоржи Мухаммед    │ 1:4 - standart - 14165 - rating = 3  │
+│                   │ 4:4 - standart - 212341 - rating = 1 │
+│                   │ 5:1 - standart - 451308 - rating = 4 │
+├───────────────────┼──────────────────────────────────────┤
+│ Илья Амане        │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Илья Лайт         │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Кира Мухаммед     │ 2:4 - half vip - 467683 - rating = 5 │
+├───────────────────┼──────────────────────────────────────┤
+│ Константин Амане  │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Мива Макинами     │ 2:3 - half vip - 4371 - rating = 3   │
+├───────────────────┼──────────────────────────────────────┤
+│ Роуз Геноза       │ 1:1 - standart - 467315 - rating = 1 │
+├───────────────────┼──────────────────────────────────────┤
+│ Роуз Ленгли       │ 3:3 - half vip - 288016 - rating = 5 │
+│                   │ 5:1 - standart - 13165 - rating = 2  │
+├───────────────────┼──────────────────────────────────────┤
+│ Синдзи Почитта    │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Фэй Джостар       │ 1:3 - half vip - 198893 - rating = 4 │
+│                   │ 1:4 - standart - 364377 - rating = 4 │
+╘═══════════════════╧══════════════════════════════════════╛
+20 rows in set
+Time: 0.021s
+
+# 2022-11-11 00:53:21.936090
+select `Full_name`,
+(select group_concat(concat(r.`Floor`, ':', r.`Number`,
+'\t-\t', r.`Class`, '\t-\t', h.`Price`, '\t-\trating = ', h.`Stars`, '\n') 
+order by r.Floor, r.`Number`, r.`Class`, h.`Price` separator '')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id) as `orders`
+from `People` p
+order by p.`Full_name`;
+╒═══════════════════╤════════╕
+│ Full_name         │ orders │
+╞═══════════════════╪════════╡
+│ Даниил Куджо      │ 2:5	-	half vip	-	278408	-	rating = 0        │
+│                   │ 3:1	-	vip	-	479318	-	rating = 2        │
+│                   │ 4:2	-	half vip	-	186019	-	rating = 4        │
+├───────────────────┼────────┤
+│ Джозеф Джостар    │ <null> │
+├───────────────────┼────────┤
+│ Джолин Агацума    │ 6:1	-	standart	-	208037	-	rating = 0        │
+├───────────────────┼────────┤
+│ Джолин Лайт       │ <null> │
+├───────────────────┼────────┤
+│ Джонатан Ленгли   │ 1:3	-	half vip	-	356811	-	rating = 3        │
+│                   │ 4:3	-	half vip	-	456358	-	rating = 4        │
+├───────────────────┼────────┤
+│ Джонатан Макинами │ 3:2	-	half vip	-	348189	-	rating = 3        │
+├───────────────────┼────────┤
+│ Джонатан Почитта  │ <null> │
+├───────────────────┼────────┤
+│ Джорно Йошикаге   │ <null> │
+├───────────────────┼────────┤
+│ Дива Агацума      │ 4:1	-	standart	-	451559	-	rating = 5        │
+│                   │ 6:1	-	standart	-	73321	-	rating = 0        │
+├───────────────────┼────────┤
+│ Дива Почитта      │ 5:1	-	standart	-	66062	-	rating = 1        │
+├───────────────────┼────────┤
+│ Жоржи Мухаммед    │ 1:4	-	standart	-	14165	-	rating = 3        │
+│                   │ 4:4	-	standart	-	212341	-	rating = 1        │
+│                   │ 5:1	-	standart	-	451308	-	rating = 4        │
+├───────────────────┼────────┤
+│ Илья Амане        │ <null> │
+├───────────────────┼────────┤
+│ Илья Лайт         │ <null> │
+├───────────────────┼────────┤
+│ Кира Мухаммед     │ 2:4	-	half vip	-	467683	-	rating = 5        │
+├───────────────────┼────────┤
+│ Константин Амане  │ <null> │
+├───────────────────┼────────┤
+│ Мива Макинами     │ 2:3	-	half vip	-	4371	-	rating = 3        │
+├───────────────────┼────────┤
+│ Роуз Геноза       │ 1:1	-	standart	-	467315	-	rating = 1        │
+├───────────────────┼────────┤
+│ Роуз Ленгли       │ 3:3	-	half vip	-	288016	-	rating = 5        │
+│                   │ 5:1	-	standart	-	13165	-	rating = 2        │
+├───────────────────┼────────┤
+│ Синдзи Почитта    │ <null> │
+├───────────────────┼────────┤
+│ Фэй Джостар       │ 1:3	-	half vip	-	198893	-	rating = 4        │
+│                   │ 1:4	-	standart	-	364377	-	rating = 4        │
+╘═══════════════════╧════════╛
+20 rows in set
+Time: 0.031s
+
+# 2022-11-11 00:53:38.666466
+select `Full_name`,
+(select group_concat(concat(r.`Floor`, ':', r.`Number`,
+' - ', r.`Class`, ' - ', h.`Price`, ' - rating = ', h.`Stars`, '\n') 
+order by r.Floor, r.`Number`, r.`Class`, h.`Price` separator '')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id) as `orders`
+from `People` p
+order by p.`Full_name`;
+╒═══════════════════╤══════════════════════════════════════╕
+│ Full_name         │ orders                               │
+╞═══════════════════╪══════════════════════════════════════╡
+│ Даниил Куджо      │ 2:5 - half vip - 278408 - rating = 0 │
+│                   │ 3:1 - vip - 479318 - rating = 2      │
+│                   │ 4:2 - half vip - 186019 - rating = 4 │
+├───────────────────┼──────────────────────────────────────┤
+│ Джозеф Джостар    │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Джолин Агацума    │ 6:1 - standart - 208037 - rating = 0 │
+├───────────────────┼──────────────────────────────────────┤
+│ Джолин Лайт       │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Джонатан Ленгли   │ 1:3 - half vip - 356811 - rating = 3 │
+│                   │ 4:3 - half vip - 456358 - rating = 4 │
+├───────────────────┼──────────────────────────────────────┤
+│ Джонатан Макинами │ 3:2 - half vip - 348189 - rating = 3 │
+├───────────────────┼──────────────────────────────────────┤
+│ Джонатан Почитта  │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Джорно Йошикаге   │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Дива Агацума      │ 4:1 - standart - 451559 - rating = 5 │
+│                   │ 6:1 - standart - 73321 - rating = 0  │
+├───────────────────┼──────────────────────────────────────┤
+│ Дива Почитта      │ 5:1 - standart - 66062 - rating = 1  │
+├───────────────────┼──────────────────────────────────────┤
+│ Жоржи Мухаммед    │ 1:4 - standart - 14165 - rating = 3  │
+│                   │ 4:4 - standart - 212341 - rating = 1 │
+│                   │ 5:1 - standart - 451308 - rating = 4 │
+├───────────────────┼──────────────────────────────────────┤
+│ Илья Амане        │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Илья Лайт         │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Кира Мухаммед     │ 2:4 - half vip - 467683 - rating = 5 │
+├───────────────────┼──────────────────────────────────────┤
+│ Константин Амане  │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Мива Макинами     │ 2:3 - half vip - 4371 - rating = 3   │
+├───────────────────┼──────────────────────────────────────┤
+│ Роуз Геноза       │ 1:1 - standart - 467315 - rating = 1 │
+├───────────────────┼──────────────────────────────────────┤
+│ Роуз Ленгли       │ 3:3 - half vip - 288016 - rating = 5 │
+│                   │ 5:1 - standart - 13165 - rating = 2  │
+├───────────────────┼──────────────────────────────────────┤
+│ Синдзи Почитта    │ <null>                               │
+├───────────────────┼──────────────────────────────────────┤
+│ Фэй Джостар       │ 1:3 - half vip - 198893 - rating = 4 │
+│                   │ 1:4 - standart - 364377 - rating = 4 │
+╘═══════════════════╧══════════════════════════════════════╛
+20 rows in set
+Time: 0.068s
+
+# 2022-11-11 01:23:31.883628
+select 'Джонатан Джостар' as `name`, h.`DateInfo` from `HotelOrder` h where h.person_id = 
+(select person_id from `People` where `Full_name` = 'Джонатан Джостар');
+╒══════╤══════════╕
+│ name │ DateInfo │
+╞══════╪══════════╡
+╘══════╧══════════╛
+0 rows in set
+Time: 0.086s
+
+# 2022-11-11 01:23:48.660802
+select 'Джонатан Джостар' as `name`, h.`DateInfo` from `HotelOrder` h where h.person_id = 
+(select person_id from `People` where `Full_name` = 'Фей Джостар');
+╒══════╤══════════╕
+│ name │ DateInfo │
+╞══════╪══════════╡
+╘══════╧══════════╛
+0 rows in set
+Time: 0.013s
+
+# 2022-11-11 01:23:58.621118
+select 'Джонатан Джостар' as `name`, h.`DateInfo` from `HotelOrder` h where h.person_id = 
+(select person_id from `People` where `Full_name` = n'Фей Джостар');
+╒══════╤══════════╕
+│ name │ DateInfo │
+╞══════╪══════════╡
+╘══════╧══════════╛
+0 rows in set
+Time: 0.016s
+
+# 2022-11-11 01:24:14.612109
+select 'Джонатан Джостар' as `name`, h.`DateInfo` from `HotelOrder` h where h.person_id = 
+any(select person_id from `People` where `Full_name` = 'Фей Джостар');
+╒══════╤══════════╕
+│ name │ DateInfo │
+╞══════╪══════════╡
+╘══════╧══════════╛
+0 rows in set
+Time: 0.026s
+
+# 2022-11-11 01:24:36.511004
+select 'Джонатан Джостар' as `name`, h.`DateInfo` from `HotelOrder` h where h.person_id = 
+any(select person_id from `People` where `Full_name` = 'Ф'й Джостар');
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'й Джостар')' at line 2")
+
+# 2022-11-11 01:24:40.550005
+select 'Джонатан Джостар' as `name`, h.`DateInfo` from `HotelOrder` h where h.person_id = 
+any(select person_id from `People` where `Full_name` = 'Фэй Джостар');
+╒══════════════════╤════════════╕
+│ name             │ DateInfo   │
+╞══════════════════╪════════════╡
+│ Джонатан Джостар │ 2007-08-24 │
+├──────────────────┼────────────┤
+│ Джонатан Джостар │ 2014-12-07 │
+╘══════════════════╧════════════╛
+2 rows in set
+Time: 0.019s
+
+# 2022-11-11 01:25:07.030154
+select 'Фей Джостар' as `name`, h.`DateInfo` from `HotelOrder` h where h.person_id = 
+(select person_id from `People` where `Full_name` = 'Фэй Джостар');
+╒═════════════╤════════════╕
+│ name        │ DateInfo   │
+╞═════════════╪════════════╡
+│ Фей Джостар │ 2007-08-24 │
+├─────────────┼────────────┤
+│ Фей Джостар │ 2014-12-07 │
+╘═════════════╧════════════╛
+2 rows in set
+Time: 0.011s
+
+# 2022-11-11 01:26:44.091380
+select 'Фей Джостар' as `name`, h.`DateInfo` from `HotelOrder` h where h.person_id = 
+(select person_id from `People` where `Full_name` = 'Фэй Джостар');
+╒═════════════╤════════════╕
+│ name        │ DateInfo   │
+╞═════════════╪════════════╡
+│ Фей Джостар │ 2007-08-24 │
+├─────────────┼────────────┤
+│ Фей Джостар │ 2014-12-07 │
+╘═════════════╧════════════╛
+2 rows in set
+Time: 0.028s
+
+# 2022-11-11 01:26:46.770274
+quit
+Goodbye!

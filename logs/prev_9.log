@@ -1,0 +1,446 @@
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-08 22:14:00.398644
+use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.001s
+
+# 2022-11-08 22:19:24.185566
+select `People`.`Full_name` from `People` where exists( 
+select * from `HotelOrder` where `HotelOrder`.person_id = `People`.person_id );
++-------------------+
+| Full_name         |
++-------------------+
+| Мива Макинами     |
+| Кира Мухаммед     |
+| Жоржи Мухаммед    |
+| Даниил Куджо      |
+| Фэй Джостар       |
+| Роуз Геноза       |
+| Дива Агацума      |
+| Джонатан Макинами |
+| Роуз Ленгли       |
+| Джолин Агацума    |
+| Дива Почитта      |
+| Джонатан Ленгли   |
++-------------------+
+12 rows in set
+Time: 0.022s
+
+# 2022-11-08 22:19:45.315320
+select `People`.`Full_name` from `People` where not exists( 
+select * from `HotelOrder` where `HotelOrder`.person_id = `People`.person_id );
++------------------+
+| Full_name        |
++------------------+
+| Синдзи Почитта   |
+| Джолин Лайт      |
+| Джорно Йошикаге  |
+| Джозеф Джостар   |
+| Илья Лайт        |
+| Константин Амане |
+| Джонатан Почитта |
+| Илья Амане       |
++------------------+
+8 rows in set
+Time: 0.010s
+
+# 2022-11-08 22:33:49.872806
+select `People`.`Full_name` from `People` where
+ exists(select * from `HotelOrder` where 
+ `HotelOrder`.person_id = `People`.person_id and
+  exists(select * from `Room` where `Room`.room_id = `HotelOrder`.room_id
+   and (`Room`.`Class` = 'vip' or `Room`.`Class` = 'half vip' ) ) );
++-------------------+
+| Full_name         |
++-------------------+
+| Мива Макинами     |
+| Кира Мухаммед     |
+| Даниил Куджо      |
+| Фэй Джостар       |
+| Джонатан Макинами |
+| Роуз Ленгли       |
+| Джонатан Ленгли   |
++-------------------+
+7 rows in set
+Time: 0.020s
+
+# 2022-11-08 22:37:50.763279
+select `People`.`Full_name` from `People` where
+ exists(select * from `HotelOrder` where 
+ `HotelOrder`.person_id = `People`.person_id and
+  exists(select * from `Room` where `Room`.room_id = `HotelOrder`.room_id
+   and 'standart' = all( select `Class` from `Room` where `Room`.room_id = `HotelOrder`.room_id ) ) ) ;
++----------------+
+| Full_name      |
++----------------+
+| Жоржи Мухаммед |
+| Фэй Джостар    |
+| Роуз Геноза    |
+| Дива Агацума   |
+| Роуз Ленгли    |
+| Джолин Агацума |
+| Дива Почитта   |
++----------------+
+7 rows in set
+Time: 0.018s
+
+# 2022-11-08 22:38:14.207801
+select `People`.`Full_name` from `People` where
+ exists(select * from `HotelOrder` where 
+ `HotelOrder`.person_id = `People`.person_id and
+  exists(select * from `Room` where `Room`.room_id = `HotelOrder`.room_id
+   and 'standart' = all( select `Class` from `Room` where `Room`.room_id = `HotelOrder`.room_id ) ) );
++----------------+
+| Full_name      |
++----------------+
+| Жоржи Мухаммед |
+| Фэй Джостар    |
+| Роуз Геноза    |
+| Дива Агацума   |
+| Роуз Ленгли    |
+| Джолин Агацума |
+| Дива Почитта   |
++----------------+
+7 rows in set
+Time: 0.018s
+
+# 2022-11-08 22:38:38.977817
+select `People`.`Full_name` from `People` where
+ exists(select * from `HotelOrder` where 
+ `HotelOrder`.person_id = `People`.person_id and
+  exists(select * from `Room` where `Room`.room_id = `HotelOrder`.room_id
+   and 'standart' = all( select `Class` from `Room` where `Room`.room_id = `HotelOrder`.room_id ) ) )
+   group by `Full_name`;
++----------------+
+| Full_name      |
++----------------+
+| Джолин Агацума |
+| Роуз Геноза    |
+| Дива Почитта   |
+| Жоржи Мухаммед |
+| Дива Агацума   |
+| Фэй Джостар    |
+| Роуз Ленгли    |
++----------------+
+7 rows in set
+Time: 0.018s
+
+# 2022-11-08 22:38:51.097840
+select `People`.`Full_name` from `People` where
+ exists(select * from `HotelOrder` where 
+ `HotelOrder`.person_id = `People`.person_id and
+  exists(select * from `Room` where `Room`.room_id = `HotelOrder`.room_id
+   and 'standart' = all( select `Class` from `Room` where `Room`.room_id = `HotelOrder`.room_id ) ) )
+   order by `Full_name`;
++----------------+
+| Full_name      |
++----------------+
+| Джолин Агацума |
+| Дива Агацума   |
+| Дива Почитта   |
+| Жоржи Мухаммед |
+| Роуз Геноза    |
+| Роуз Ленгли    |
+| Фэй Джостар    |
++----------------+
+7 rows in set
+Time: 0.010s
+
+# 2022-11-08 23:01:58.031086
+select `People`.`Full_name` from `People` where
+'standart' = all( select r.`Class` from ( select * from `HotelOrder` where 
+`HotelOrder`.person_id = `People`.person_id ) as h 
+inner join `Room` r on h.room_id = r.room_id )
+order by `Full_name`;
++------------------+
+| Full_name        |
++------------------+
+| Джозеф Джостар   |
+| Джолин Агацума   |
+| Джолин Лайт      |
+| Джонатан Почитта |
+| Джорно Йошикаге  |
+| Дива Агацума     |
+| Дива Почитта     |
+| Жоржи Мухаммед   |
+| Илья Амане       |
+| Илья Лайт        |
+| Константин Амане |
+| Роуз Геноза      |
+| Синдзи Почитта   |
++------------------+
+13 rows in set
+Time: 0.013s
+
+# 2022-11-08 23:20:09.116312
+select `People`.`Full_name` from `People` where
+'standart' = all( select r.`Class` from ( select * from `HotelOrder` where 
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+order by `Full_name`;
++------------------+
+| Full_name        |
++------------------+
+| Джозеф Джостар   |
+| Джолин Агацума   |
+| Джолин Лайт      |
+| Джонатан Почитта |
+| Джорно Йошикаге  |
+| Дива Агацума     |
+| Дива Почитта     |
+| Жоржи Мухаммед   |
+| Илья Амане       |
+| Илья Лайт        |
+| Константин Амане |
+| Роуз Геноза      |
+| Синдзи Почитта   |
++------------------+
+13 rows in set
+Time: 0.016s
+
+# 2022-11-08 23:20:59.687065
+select `People`.`Full_name` from `People` where
+'standart' = all( select r.`Class` from ( select * from `HotelOrder` where 
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+and 
+
+exists(select r.`Class` from ( select * from `HotelOrder` where
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+order by `Full_name`;
++----------------+
+| Full_name      |
++----------------+
+| Джолин Агацума |
+| Дива Агацума   |
+| Дива Почитта   |
+| Жоржи Мухаммед |
+| Роуз Геноза    |
++----------------+
+5 rows in set
+Time: 0.021s
+
+# 2022-11-08 23:56:04.075347
+select `People`.`Full_name` from `People` where
+'vip' = any( select r.`Class` from ( select * from `HotelOrder` where 
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+and 
+
+exists(select r.`Class` from ( select * from `HotelOrder` where
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+order by `Full_name`;
++--------------+
+| Full_name    |
++--------------+
+| Даниил Куджо |
++--------------+
+1 row in set
+Time: 0.013s
+
+# 2022-11-09 00:10:18.130898
+select `Room`.`Floor`, `Room`.`Number` from `Room` 
+where room_id = any( select `HotelOrder`.room_id from `HotelOrder`);
++-------+--------+
+| Floor | Number |
++-------+--------+
+| 1     | 1      |
+| 1     | 3      |
+| 1     | 4      |
+| 2     | 3      |
+| 2     | 4      |
+| 2     | 5      |
+| 3     | 1      |
+| 3     | 2      |
+| 3     | 3      |
+| 4     | 1      |
+| 4     | 2      |
+| 4     | 3      |
+| 4     | 4      |
+| 5     | 1      |
+| 6     | 1      |
++-------+--------+
+15 rows in set
+Time: 0.012s
+
+# 2022-11-09 00:10:30.911791
+select `Room`.`Floor`, `Room`.`Number` from `Room` 
+where not room_id = any( select `HotelOrder`.room_id from `HotelOrder`);
++-------+--------+
+| Floor | Number |
++-------+--------+
+| 1     | 2      |
+| 2     | 1      |
+| 2     | 2      |
+| 3     | 4      |
+| 3     | 5      |
++-------+--------+
+5 rows in set
+Time: 0.010s
+
+# 2022-11-09 00:10:53.082787
+quit;
+Goodbye!
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-08 22:14:00.398644
+use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.001s
+
+# 2022-11-08 22:19:24.185566
+select `People`.`Full_name` from `People` where exists( 
+select * from `HotelOrder` where `HotelOrder`.person_id = `People`.person_id );
++-------------------+
+| Full_name         |
++-------------------+
+| Мива Макинами     |
+| Кира Мухаммед     |
+| Жоржи Мухаммед    |
+| Даниил Куджо      |
+| Фэй Джостар       |
+| Роуз Геноза       |
+| Дива Агацума      |
+| Джонатан Макинами |
+| Роуз Ленгли       |
+| Джолин Агацума    |
+| Дива Почитта      |
+| Джонатан Ленгли   |
++-------------------+
+12 rows in set
+Time: 0.022s
+
+# 2022-11-08 22:19:45.315320
+select `People`.`Full_name` from `People` where not exists( 
+select * from `HotelOrder` where `HotelOrder`.person_id = `People`.person_id );
++------------------+
+| Full_name        |
++------------------+
+| Синдзи Почитта   |
+| Джолин Лайт      |
+| Джорно Йошикаге  |
+| Джозеф Джостар   |
+| Илья Лайт        |
+| Константин Амане |
+| Джонатан Почитта |
+| Илья Амане       |
++------------------+
+8 rows in set
+Time: 0.010s
+
+# 2022-11-08 22:33:49.872806
+select `People`.`Full_name` from `People` where
+exists(select * from `HotelOrder` where
+`HotelOrder`.person_id = `People`.person_id and
+exists(select * from `Room` where `Room`.room_id = `HotelOrder`.room_id
+and (`Room`.`Class` = 'vip' or `Room`.`Class` = 'half vip' ) ) );
++-------------------+
+| Full_name         |
++-------------------+
+| Мива Макинами     |
+| Кира Мухаммед     |
+| Даниил Куджо      |
+| Фэй Джостар       |
+| Джонатан Макинами |
+| Роуз Ленгли       |
+| Джонатан Ленгли   |
++-------------------+
+7 rows in set
+Time: 0.020s
+
+# 2022-11-08 23:20:59.687065
+select `People`.`Full_name` from `People` where
+'standart' = all( select r.`Class` from ( select * from `HotelOrder` where 
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+and 
+
+exists(select r.`Class` from ( select * from `HotelOrder` where
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+order by `Full_name`;
++----------------+
+| Full_name      |
++----------------+
+| Джолин Агацума |
+| Дива Агацума   |
+| Дива Почитта   |
+| Жоржи Мухаммед |
+| Роуз Геноза    |
++----------------+
+5 rows in set
+Time: 0.021s
+
+# 2022-11-08 23:56:04.075347
+select `People`.`Full_name` from `People` where
+'vip' = any( select r.`Class` from ( select * from `HotelOrder` where 
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+and 
+
+exists(select r.`Class` from ( select * from `HotelOrder` where
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+order by `Full_name`;
++--------------+
+| Full_name    |
++--------------+
+| Даниил Куджо |
++--------------+
+1 row in set
+Time: 0.013s
+
+# 2022-11-09 00:10:18.130898
+select `Room`.`Floor`, `Room`.`Number` from `Room` 
+where room_id = any( select `HotelOrder`.room_id from `HotelOrder`);
++-------+--------+
+| Floor | Number |
++-------+--------+
+| 1     | 1      |
+| 1     | 3      |
+| 1     | 4      |
+| 2     | 3      |
+| 2     | 4      |
+| 2     | 5      |
+| 3     | 1      |
+| 3     | 2      |
+| 3     | 3      |
+| 4     | 1      |
+| 4     | 2      |
+| 4     | 3      |
+| 4     | 4      |
+| 5     | 1      |
+| 6     | 1      |
++-------+--------+
+15 rows in set
+Time: 0.012s
+
+# 2022-11-09 00:10:30.911791
+select `Room`.`Floor`, `Room`.`Number` from `Room` 
+where not room_id = any( select `HotelOrder`.room_id from `HotelOrder`);
++-------+--------+
+| Floor | Number |
++-------+--------+
+| 1     | 2      |
+| 2     | 1      |
+| 2     | 2      |
+| 3     | 4      |
+| 3     | 5      |
++-------+--------+
+5 rows in set
+Time: 0.010s
+
+# 2022-11-09 00:10:53.082787
+quit;
+Goodbye!

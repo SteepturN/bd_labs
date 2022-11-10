@@ -1,0 +1,72 @@
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by user mysql
+
+# 2022-11-08 22:04:40.750848
+use labs;
+You are now connected to database "labs" as user "steep"
+Time: 0.001s
+
+# 2022-11-08 22:05:11.639011
+select `People`.`Age` from `People` where `Age` < 19
++-----+
+| Age |
++-----+
+| 4   |
+| 8   |
+| 10  |
+| 1   |
++-----+
+4 rows in set
+Time: 0.016s
+
+# 2022-11-08 22:08:40.307634
+select p.`Full_name`, h.`Price` from `People` p inner join `HotelOrder` h using (person_id)
+where p.`Full_name` in ( select `People`.`Full_name` from `People` where `Age` < 19 );
++-------------+--------+
+| Full_name   | Price  |
++-------------+--------+
+| Роуз Ленгли | 288016 |
+| Роуз Ленгли | 13165  |
++-------------+--------+
+2 rows in set
+Time: 0.020s
+
+# 2022-11-08 22:09:03.800038
+select p.`Full_name`, p.`Age`, h.`Price` from `People` p inner join `HotelOrder` h using (person_id)
+where p.`Full_name` in ( select `People`.`Full_name` from `People` where `Age` < 19 );
++-------------+-----+--------+
+| Full_name   | Age | Price  |
++-------------+-----+--------+
+| Роуз Ленгли | 1   | 288016 |
+| Роуз Ленгли | 1   | 13165  |
++-------------+-----+--------+
+2 rows in set
+Time: 0.011s
+
+# 2022-11-08 22:10:37.225122
+select * from `HotelOrder` where `Price` > (select avg( `Price` ) from `HotelOrder`);
++------------+--------+-------+-----------+---------+----------+
+| DateInfo   | Price  | Stars | person_id | room_id | order_id |
++------------+--------+-------+-----------+---------+----------+
+| 2001-06-22 | 467315 | 1     | 9         | 1       | 2        |
+| 1975-08-11 | 348189 | 3     | 14        | 11      | 3        |
+| 2005-12-02 | 288016 | 5     | 16        | 12      | 6        |
+| 1997-03-21 | 356811 | 3     | 20        | 3       | 10       |
+| 2012-07-21 | 451559 | 5     | 13        | 15      | 11       |
+| 1987-09-20 | 451308 | 4     | 6         | 19      | 12       |
+| 2007-03-14 | 278408 | 0     | 7         | 9       | 13       |
+| 1982-05-01 | 456358 | 4     | 20        | 17      | 14       |
+| 1992-01-13 | 479318 | 2     | 7         | 10      | 15       |
+| 1982-05-13 | 467683 | 5     | 2         | 8       | 16       |
+| 2014-12-07 | 364377 | 4     | 8         | 4       | 18       |
++------------+--------+-------+-----------+---------+----------+
+11 rows in set
+Time: 0.015s
+
+# 2022-11-08 22:10:58.341147
+select * from `HotelOrder` where `Price` > 
+avg( `Price` );
+(1111, 'Invalid use of group function')
+
+# 2022-11-08 22:13:11.254891
+quit;
+Goodbye!
