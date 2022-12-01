@@ -1,0 +1,121 @@
+UNION
+Вывести список заказов и их цены, а так же суммирующие строки для заказов каждой комнаты
+
+mysql root@(none):labs> (select 'Room order' as Name, room_id, `Price` from `HotelOrder` union select 'Z-SUM' as Na
+                        me, room_id, sum(`Price`) as Sum from `HotelOrder` group by room_id) order by room_id, Name
+                                                                                                                   
++------------+---------+--------+
+| Name       | room_id | Price  |
++------------+---------+--------+
+| Room order | 1       | 467315 |
+| Z-SUM      | 1       | 467315 |
+| Room order | 3       | 198893 |
+| Room order | 3       | 356811 |
+| Z-SUM      | 3       | 555704 |
+| Room order | 4       | 364377 |
+| Room order | 4       | 14165  |
+| Z-SUM      | 4       | 378542 |
+| Room order | 7       | 4371   |
+| Z-SUM      | 7       | 4371   |
+| Room order | 8       | 467683 |
+| Z-SUM      | 8       | 467683 |
+| Room order | 9       | 278408 |
+| Z-SUM      | 9       | 278408 |
+| Room order | 10      | 479318 |
+| Z-SUM      | 10      | 479318 |
+| Room order | 11      | 348189 |
+| Z-SUM      | 11      | 348189 |
+| Room order | 12      | 288016 |
+| Z-SUM      | 12      | 288016 |
+| Room order | 15      | 451559 |
+| Z-SUM      | 15      | 451559 |
+| Room order | 16      | 186019 |
+| Z-SUM      | 16      | 186019 |
+| Room order | 17      | 456358 |
+| Z-SUM      | 17      | 456358 |
+| Room order | 18      | 212341 |
+| Z-SUM      | 18      | 212341 |
+| Room order | 19      | 13165  |
+| Room order | 19      | 66062  |
+| Room order | 19      | 451308 |
+| Z-SUM      | 19      | 530535 |
+| Room order | 20      | 73321  |
+| Room order | 20      | 208037 |
+| Z-SUM      | 20      | 281358 |
++------------+---------+--------+
+
+INTERSECT
+
+Вывести id людей старше 40 лет, которые заселялись в отель которые заплатили больше чем в среднем
+
+mysql root@(none):labs> select person_id from `People` where `Age` > 40 INTERSECT select person_id from `Hotel
+                        Order` where `Price`>(select avg(`Price`) from `HotelOrder`)                          
++-----------+
+| person_id |
++-----------+
+| 2         |
+| 6         |
+| 9         |
+| 13        |
+| 14        |
+| 20        |
++-----------+
+
+
+INTERSEPT работает по принципу пересечения множеств:
+
+mysql root@(none):labs> select person_id from `People` INTERSECT (select person_id from `People` limit 5)          
++-----------+
+| person_id |
++-----------+
+| 1         |
+| 2         |
+| 3         |
+| 4         |
+| 5         |
++-----------+
+
+
+EXCEPT - работает по принципу разности множеств
+
+mysql root@(none):labs> select person_id from `People` EXCEPT (select person_id from `People` limit 5)             
++-----------+
+| person_id |
++-----------+
+| 6         |
+| 7         |
+| 8         |
+| 9         |
+| 10        |
+| 11        |
+| 12        |
+| 13        |
+| 14        |
+| 15        |
+| 16        |
+| 17        |
+| 18        |
+| 19        |
+| 20        |
++-----------+
+
+
+Люди, делавшие заказ, возрастом меньше 18
+mysql root@(none):labs> select distinct person_id from `HotelOrder` except select person_id from `People` wher
+                        e Age < 18                                                                            
++-----------+
+| person_id |
++-----------+
+| 1         |
+| 2         |
+| 6         |
+| 7         |
+| 8         |
+| 9         |
+| 13        |
+| 14        |
+| 17        |
+| 18        |
+| 20        |
++-----------+
+
