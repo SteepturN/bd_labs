@@ -1,0 +1,84 @@
+\begin{enumerate}
+\item Назначение запроса: найти мак
+симальную цену заказа
+\begin{verbatim}
+
+# 2022-11-08 14:41:03.339640
+select MAX(`Price`) from `HotelOrder`
++--------------+
+| MAX(`Price`) |
++--------------+
+| 479318       |
++--------------+
+1 row in set
+Time: 0.068s
+
+\end{verbatim}
+
+\item Назначение запроса: найти пол
+ученные деньги по результатами д
+анных заказов
+
+\begin{verbatim}
+# 2022-11-08 14:41:38.391207
+select sum(`Price`) from `HotelOrder`
++--------------+
+| sum(`Price`) |
++--------------+
+| 5385716      |
++--------------+
+1 row in set
+Time: 0.015s
+
+\end{verbatim}
+
+\item Назначение запроса: найти сре
+днюю стоимость заказа
+
+\begin{verbatim}
+# 2022-11-08 14:43:41.647339
+select avg(`Price`) as `avg price` from `HotelOrder`
++-------------+
+| avg price   |
++-------------+
+| 269285.8000 |
++-------------+
+1 row in set
+Time: 0.008s
+\end{verbatim}
+
+\item Назначение запроса: найти кол
+ичество vip номеров
+
+\begin{verbatim}
+
+# 2022-11-08 14:46:01.356869
+select count(*) as `vip rooms count` from `Room` where `Clas
+s` = 'vip'
++-----------------+
+| vip rooms count |
++-----------------+
+| 1               |
++-----------------+
+1 row in set
+Time: 0.017s
+\end{verbatim}
+
+\item Назначение запроса: найти кол
+ичество standart номеров
+
+\begin{verbatim}
+
+# 2022-11-08 14:46:14.352622
+select count(*) as `standart rooms count` from `Room` where 
+`Class` = 'standart'
++----------------------+
+| standart rooms count |
++----------------------+
+| 9                    |
++----------------------+
+1 row in set
+Time: 0.012s
+\end{verbatim}
+
+\end{enumerate}

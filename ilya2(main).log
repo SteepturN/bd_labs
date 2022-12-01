@@ -1,3 +1,4 @@
+1.  Выбирает все поля из таблицы HotelOrder, где Stars равно 4 или 5
 
 select * from `HotelOrder`  where `Stars`  in (4, 5)
 +------------+--------+-------+-----------+---------+----------+
@@ -14,7 +15,7 @@ select * from `HotelOrder`  where `Stars`  in (4, 5)
 +------------+--------+-------+-----------+---------+----------+
 
 
-
+2.  Выбираем Full_name из таблицы People, где Sex это Male или Female
 select `Full_name` from `People` where `Sex` in ('Male', 'Female')
 +-----------------+
 | Full_name       |
@@ -27,7 +28,7 @@ select `Full_name` from `People` where `Sex` in ('Male', 'Female')
 | Дива Агацума    |
 +-----------------+
 
-
+3.  Выбираем Class из таблицы Room, где Class может быть standart или vip
 select `Class` from `Room` where `Class` in ('standart', 'vip')
 +----------+
 | Class    |
@@ -46,38 +47,8 @@ select `Class` from `Room` where `Class` in ('standart', 'vip')
 10 rows in set
 Time: 0.014s
 
-# 2022-11-08 16:46:49.273094
-select `Number` from `Room` where `Class` in ('standart', 'vip')
-+--------+
-| Number |
-+--------+
-| 1      |
-| 2      |
-| 4      |
-| 2      |
-| 1      |
-| 5      |
-| 1      |
-| 4      |
-| 1      |
-| 1      |
-+--------+
-10 rows in set
-Time: 0.008s
 
-
-
-select distinct `Number` from `Room` where `Class` in ('standart', 'vip')
-+--------+
-| Number |
-+--------+
-| 1      |
-| 2      |
-| 4      |
-| 5      |
-+--------+
-
-
+4.  Выбираем всё из HotelOrder, где цена находится между 10000 и 50000
 select * from `HotelOrder` where `Price` between 10000 and 50000
 +------------+-------+-------+-----------+---------+----------+
 | DateInfo   | Price | Stars | person_id | room_id | order_id |
@@ -88,6 +59,8 @@ select * from `HotelOrder` where `Price` between 10000 and 50000
 
 
 
+5.  Выбираем всё из таблицы HotelOrder, где DateInfo находится между 1999-01-01 00:00:00 и 2005-01-01 00:00:00
+
 select * from `HotelOrder` where `DateInfo` between '1999-01-01 00:00:00' and '2005-01-01 00:00:00'
 +------------+--------+-------+-----------+---------+----------+
 | DateInfo   | Price  | Stars | person_id | room_id | order_id |
@@ -97,77 +70,7 @@ select * from `HotelOrder` where `DateInfo` between '1999-01-01 00:00:00' and '2
 | 2000-05-29 | 186019 | 4     | 7         | 16      | 7        |
 +------------+--------+-------+-----------+---------+----------+
 
-
-
-select * from `People` where `Full_name` in ('Илья Амане', 'Илья Лайт', 'Константин Амане', 'Даниил Куджо')
-+------------------+-----+------------+----------------+-----------+
-| Full_name        | Age | Passport   | Sex            | person_id |
-+------------------+-----+------------+----------------+-----------+
-| Даниил Куджо     | 22  | 1217562659 | Not applicable | 7         |
-| Илья Лайт        | 64  | 9773355810 | Male           | 11        |
-| Константин Амане | 65  | 2616906135 | Not known      | 12        |
-| Илья Амане       | 20  | 4097248329 | Not known      | 19        |
-+------------------+-----+------------+----------------+-----------+
-
-
-
-select * from `Room` where `Floor` between 4 and 6
-+-------+--------+----------+----------+---------+
-| Floor | Number | Class    | Capacity | room_id |
-+-------+--------+----------+----------+---------+
-| 4     | 1      | standart | 4        | 15      |
-| 4     | 2      | half vip | 3        | 16      |
-| 4     | 3      | half vip | 3        | 17      |
-| 4     | 4      | standart | 4        | 18      |
-| 5     | 1      | standart | 4        | 19      |
-| 6     | 1      | standart | 2        | 20      |
-+-------+--------+----------+----------+---------+
-
-
-
-select * from `Room` where `Floor` between 4 and 6 and `Class` in ('standart', 'half vip')
-+-------+--------+----------+----------+---------+
-| Floor | Number | Class    | Capacity | room_id |
-+-------+--------+----------+----------+---------+
-| 4     | 1      | standart | 4        | 15      |
-| 4     | 2      | half vip | 3        | 16      |
-| 4     | 3      | half vip | 3        | 17      |
-| 4     | 4      | standart | 4        | 18      |
-| 5     | 1      | standart | 4        | 19      |
-| 6     | 1      | standart | 2        | 20      |
-+-------+--------+----------+----------+---------+
-
-
-
-select * from `HotelOrder` where `Stars` between 0 and 3
-+------------+--------+-------+-----------+---------+----------+
-| DateInfo   | Price  | Stars | person_id | room_id | order_id |
-+------------+--------+-------+-----------+---------+----------+
-| 1999-01-26 | 208037 | 0     | 17        | 20      | 1        |
-| 2001-06-22 | 467315 | 1     | 9         | 1       | 2        |
-| 1975-08-11 | 348189 | 3     | 14        | 11      | 3        |
-| 1990-06-22 | 66062  | 1     | 18        | 19      | 4        |
-| 1993-06-29 | 14165  | 3     | 6         | 4       | 8        |
-| 2005-04-14 | 4371   | 3     | 1         | 7       | 9        |
-| 1997-03-21 | 356811 | 3     | 20        | 3       | 10       |
-| 2007-03-14 | 278408 | 0     | 7         | 9       | 13       |
-| 1992-01-13 | 479318 | 2     | 7         | 10      | 15       |
-| 1979-04-23 | 212341 | 1     | 6         | 18      | 17       |
-| 1989-11-25 | 73321  | 0     | 13        | 20      | 19       |
-| 2009-02-03 | 13165  | 2     | 16        | 19      | 20       |
-+------------+--------+-------+-----------+---------+----------+
-
-
-
-select `Full_name` from `People` where `Full_name` like ('Илья%')
-+------------+
-| Full_name  |
-+------------+
-| Илья Лайт  |
-| Илья Амане |
-+------------+
-
-
+6.  Выбираем Full_name из таблицы People, где в Full_name есть подстрока Илья или Константин
 
 select `Full_name` from `People` where `Full_name` like 'Илья%' or `Full_name` like 'Константин%'
 +------------------+
@@ -177,23 +80,3 @@ select `Full_name` from `People` where `Full_name` like 'Илья%' or `Full_nam
 | Константин Амане |
 | Илья Амане       |
 +------------------+
-
-
-
-
-
-select `Full_name` from `People` where `People`.person_id in (select person_id from `HotelOrder` where `Stars` between 3 and 5)
-+-------------------+
-| Full_name         |
-+-------------------+
-| Джонатан Макинами |
-| Фэй Джостар       |
-| Роуз Ленгли       |
-| Даниил Куджо      |
-| Жоржи Мухаммед    |
-| Мива Макинами     |
-| Джонатан Ленгли   |
-| Дива Агацума      |
-| Кира Мухаммед     |
-+-------------------+
-

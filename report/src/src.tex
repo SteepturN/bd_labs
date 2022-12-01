@@ -1,0 +1,541 @@
+\section{Описание}
+Алгоритм Ахо — Корасик — алгоритм поиска подстроки, разработанный Альфредом Ахо и Маргарет Корасик в 1975 году, реализует поиск множества подстрок из словаря в данной строке.
+
+
+Алгоритм строит конечный автомат, которому затем передаёт строку поиска. Автомат получает по очереди все символы строки и переходит по соответствующим рёбрам. Если автомат пришёл в конечное состояние, соответствующая строка словаря присутствует в строке поиска.
+
+Принцип работы
+
+Несколько строк поиска можно объединить в дерево поиска, так называемый бор (префиксное дерево). Бор является конечным автоматом.
+
+Первая задача в алгоритме — научить автомат «самовосстанавливаться», если подстрока не совпала. При этом перевод автомата в начальное состояние при любой неподходящей букве не подходит, так как это может привести к пропуску подстроки (например, при поиске строки \textit{aabab}, попадается \textit{aabaabab}, после считывания пятого символа перевод автомата в исходное состояние приведёт к пропуску подстроки — верно было бы перейти в состояние \textit{a}, а потом снова обработать пятый символ). Чтобы автомат самовосстанавливался, к нему добавляются суффиксные ссылки, нагруженные пустым символом (так что детерминированный автомат превращается в недетерминированный). Например, если разобрана строка \textit{aaba}, то бору предлагаются суффиксы \textit{aba}, \textit{ba}, \textit{a}. Суффиксная ссылка — это ссылка на узел, соответствующий самому длинному суффиксу, который не заводит бор в тупик (в данном случае \textit{a}).
+
+Для корневого узла суффиксная ссылка — петля. Для остальных правило таково: если последний распознанный символ — \textit{c}, то осуществляется обход по суффиксной ссылке родителя, если оттуда есть дуга, нагруженная символом \textit{c}, суффиксная ссылка направляется в тот узел, куда эта дуга ведёт. Иначе — алгоритм проходит по суффиксной ссылке ещё и ещё раз, пока либо не пройдёт по корневой ссылке-петле, либо не найдёт дугу, нагруженную символом \textit{c}.
+
+Этот автомат недетерминированный. Преобразование недетерминированного конечного автомата в детерминированный в общем случае приводит к значительному увеличению количества вершин. Но этот автомат можно превратить в детерминированный, не создавая новых вершин: если для вершины \textit{v} некуда идти по символу \textit{c}, проходимся по суффиксной ссылке ещё и ещё раз — пока либо не попадём в корень, либо будет куда идти по символу \textit{c}.
+
+Детерминизация увеличивает количество конечных вершин: если суффиксные ссылки из вершины \textit{v} ведут в конечную \textit{u}, сама \textit{v} тоже объявляется конечной. Для этого создаются так называемые конечные ссылки: конечная ссылка ведёт на ближайшую по суффиксным ссылкам конечную вершину; обход по конечным ссылкам даёт все совпавшие строки.
+
+\pagebreak
+
+\section{Исходный код}
+
+Из-за джокеров возникает большое количество проблем, и вот мои решения:
+\begin{itemize}
+    \item проблема ситуации нескольких джокеров подряд - программа их считает и записывает в массив; при обнаружении ответов она сверяет взаимное расположение найденных паттернов в соответствии с нужным количеством элементов между ними, которое появляется из-за джокеров
+    \item проблема начальных джокеров, из-за которых нельзя брать паттерны с начала текста - просто считать нужное количество слов, запоминая строки
+    \item в паттерне только джокеры - создать другую систему генерации ответов
+    \item и так далее
+\end{itemize}
+
+
+\begin{lstlisting}[language=C++]
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <deque>
+#include <map>
+#include <string>
+#include <memory>
+#include <sstream>
+#define RELEASE_VERSION
+
+using WordType = long long; //unsigned
+using PositionType = long long; // unsigned long
+using CountType = long long; // unsigned
+class AKTry {
+    public:
+        struct Pattern;
+        struct AKTNode;
+        struct Entry;
+
+
+        CountType patterns_count;
+        CountType first_jokers;
+        std::vector< PositionType > add_pos;
+
+        AKTry( std::string&& );
+        ~AKTry();
+        void find_all_entries( std::vector< std::vector< AKTry::Entry > >& );
+        void forward( AKTNode*& cur_state, WordType cur_word, Pattern& pattern );
+        AKTNode* start();
+        void other_solution( Pattern& );
+        bool only_jokers();
+        bool empty();
+
+        void _print();
+        void print( AKTNode*, int, WordType );
+    private:
+        void add( AKTNode* &cur_node, WordType word, PositionType length );
+        void pattern_found( AKTNode* p, CountType number );
+        void create_links();
+
+        AKTNode* first_node;
+        // unsigned pattern_size;
+};
+// 0 ... 2 ^ 32 - 1
+struct AKTry::AKTNode {
+    std::map< WordType, AKTry::AKTNode* > next;
+    AKTNode* link;
+    AKTNode* exit_link;
+    std::vector< CountType > number;
+    PositionType length;
+    AKTNode();
+};
+struct AKTry::Entry {
+    Entry( PositionType, PositionType );
+    PositionType line;
+    PositionType position;
+};
+AKTry::Entry::Entry( PositionType line, PositionType position )
+    : line( line ), position( position ) {}
+// struct AKTry::State {
+//     State( AKTNode* s )
+//         : cur( s ) {}
+//     bool operator==( State rhs ) {
+//         return cur == rhs.cur;
+//     }
+//     AKTNode* cur;
+// };
+struct AKTry::Pattern {
+    Pattern( bool f, AKTNode* c )
+        : found( f ), cur_solution( c ) {}
+    Pattern()
+        : found( false ), cur_solution( nullptr ) {}
+    bool found;
+    // bool switched;
+    // unsigned length;
+    // unsigned number;
+    AKTNode* cur_solution;
+};
+
+AKTry::AKTNode::AKTNode()
+    : link( nullptr ), exit_link( nullptr ), number(), length( 0 ) {}
+AKTry::AKTry( std::string&& _pattern )
+    : patterns_count( 0 ), first_jokers( 0 ), first_node( new AKTNode ) {
+    std::istringstream pattern( std::move( _pattern ) );
+    std::string word;
+    AKTNode* cur_node = first_node;
+    PositionType _add_pos = 0, length = 0;
+    CountType cur_pattern_number = 0;
+    while( ( pattern >> word ) && ( word == "?" ) ) {
+        ++first_jokers;
+    }
+// 1 ? ? ?
+    if( !pattern ) {
+        return;
+    }
+    ++_add_pos;
+    add( cur_node, static_cast< WordType >( std::stoul( word ) ), ++length );
+    while( pattern >> word ) {
+        if( word == "?" ) {
+            // joker_pos.push_back( i );
+            if( cur_node != first_node ) {
+                pattern_found( cur_node, cur_pattern_number++ ); // add pattern_number here
+                cur_node = first_node;
+                length = 0;
+            }
+        } else {
+            if( cur_node == first_node ) {
+                add_pos.push_back( _add_pos ); // add this new pattern
+                _add_pos = 0;
+            }
+            add( cur_node, static_cast< WordType >( std::stoul( word ) ), ++length );
+        }
+        ++_add_pos;
+    }
+    add_pos.push_back( _add_pos );
+    if( word != "?" ) {
+        pattern_found( cur_node, cur_pattern_number++ ); // add pattern_number here
+    }
+    create_links();
+    patterns_count = cur_pattern_number;
+}
+
+void AKTry::create_links() {
+    struct Links {
+        AKTNode* parent;
+        AKTNode* child;
+        WordType word;
+        Links( AKTNode* p, AKTNode* c, WordType w )
+            : parent( p ), child( c ), word( w ) {}
+    };
+    std::queue< Links > queue;
+    for( auto& node : first_node->next ) {
+        node.second->link = first_node;
+        for( auto child_node = node.second->next.begin();
+             child_node != node.second->next.end(); ++child_node ) {
+            queue.push( Links( node.second, child_node->second, child_node->first ) );
+        }
+    }
+    // Links cur_child;
+    while( !queue.empty() ) {
+        auto [ cur_node, cur_child, word ] = queue.front();
+        queue.pop();
+        cur_node = cur_node->link;
+        while( true ) {
+            if( cur_node->next.count( word ) ) {
+                cur_child->link = cur_node->next[ word ];
+                if( cur_child->link->number.size() != 0 ) {
+                    cur_child->exit_link = cur_child->link;
+                } else {
+                    cur_child->exit_link = cur_child->link->exit_link;
+                }
+                break;
+            } else if( cur_node == first_node ) {
+                cur_child->link = first_node;
+                break;
+            } else {
+                cur_node = cur_node->link;
+            }
+        }
+        for( auto child_node = cur_child->next.begin();
+             child_node != cur_child->next.end(); ++child_node ) {
+            queue.push( Links( cur_child, child_node->second, child_node->first ) );
+        }
+    }
+}
+void AKTry::pattern_found( AKTNode* p, CountType number ) {
+    p->number.push_back( number );
+}
+void AKTry::add( AKTNode *&cur_node, WordType word, PositionType _length ) {
+    if( /* cur_node->next.empty() || */ !cur_node->next.contains( word ) ) {
+        cur_node = cur_node->next[ word ] = new AKTNode;
+        cur_node->length = _length;
+    } else {
+        cur_node = cur_node->next[ word ];
+    }
+}
+AKTry::AKTNode* AKTry::start() {
+    return first_node;
+}
+bool AKTry::empty() {
+    return ( patterns_count == 0 ) && ( first_jokers == 0 );
+}
+void AKTry::forward( AKTNode*& cur_state, WordType cur_word, Pattern& pattern ) {
+    while( true ) {
+        if( cur_state->next.contains( cur_word ) ) {
+            cur_state = cur_state->next[ cur_word ];
+            if( cur_state->number.size() != 0 ) {
+                pattern.found = true;
+                pattern.cur_solution = cur_state;
+            } else {
+                pattern.found = false;
+            }
+            break;
+        } else if( cur_state == first_node ) {
+            pattern.found = false;
+            break;
+        } else {
+            cur_state = cur_state->link;
+        }
+    }
+}
+void AKTry::other_solution( Pattern& pattern ) {
+    if( pattern.cur_solution->exit_link != nullptr ) {
+        pattern.cur_solution = pattern.cur_solution->exit_link;
+        pattern.found = true;
+    } else {
+        pattern.found = false;
+    }
+}
+bool AKTry::only_jokers() {
+    return ( first_jokers != 0 ) && ( add_pos.size() == 0 ) && ( patterns_count == 0 );
+}
+AKTry::~AKTry() {
+    if( first_node == nullptr ) return;
+    std::queue< AKTNode* > q;
+    q.push( first_node );
+    while( !q.empty() ){
+        auto cur_node = q.front();
+        q.pop();
+        for( auto node : cur_node->next ) {
+            q.push( node.second );
+        }
+        delete cur_node;
+    }
+}
+void AKTry::_print() {
+    if( first_node == nullptr ) return;
+    for( auto next = first_node->next.begin(); next != first_node->next.end(); ++next ) {
+        print( next->second, 0, next->first );
+    }
+}
+void AKTry::print( AKTNode* node, int height, WordType word ) {
+    if( node == nullptr ) return;
+    int i = 0;
+    while( i++ < height ) {
+        std::cout << '-';
+    }
+    std::cout << word << '\t' << "[ ";
+    for( auto word : node->number ){
+        std::cout << word << ':' << "add_pos = " << add_pos[ word ] << ";\t";
+    }
+    std::cout << "]\tlength = " << node->length
+              << "\tlink = " << node->link
+              << "\texitlink = " << node->exit_link << std::endl;
+    for( auto next = node->next.begin(); next != node->next.end(); ++next ) {
+        print( next->second, height + 1, next->first );
+    }
+}
+
+void shift( std::vector< AKTry::Entry >& line_positions, PositionType position );
+int result_f( const std::vector< std::vector< PositionType > >& entries,
+            CountType pattern_num, std::vector< PositionType >& cur_positions,
+            AKTry& tree );
+
+AKTry::Entry get_entry( PositionType left_boundary,
+                        const std::vector< PositionType >& line_pos,
+                        PositionType position );
+int main() {
+
+    std::cin.tie( 0 );
+    std::ios_base::sync_with_stdio( false );
+    std::cout.tie( 0 );
+
+
+    std::string pattern_str;
+    std::getline( std::cin, pattern_str, '\n' );
+    if( pattern_str.empty() ) return 0;
+    AKTry tree( std::move( pattern_str ) );
+    // tree._print();
+    if( tree.empty() ) return 0;
+
+    char ch = EOF;
+    CountType first_jokers = tree.first_jokers;
+    std::vector< std::vector< PositionType > > entries( tree.patterns_count );
+    std::vector< AKTry::Entry > pattern_pos( 1, AKTry::Entry( 0, 0 ) );
+                                             // just for easy algorithm
+    std::vector< PositionType > line_positions( 1, 0 );
+        // last_jokers;
+    AKTry::AKTNode* cur_state = tree.start();
+    AKTry::Pattern pattern_found;
+    PositionType cur_pos = 0;
+    WordType cur_word;
+
+
+    while( cur_pos < first_jokers ) {
+        while( std::cin.get( ch ) && ( ( ch == ' ' ) || ( ch == '\t' ) ) );
+        if( std::cin.eof() ) {
+            return 0;
+        } else if ( !std::cin ) {
+            std::cerr << "error reading\n";
+            exit( 1 );
+        } else if( ch == '\n' ) {
+            line_positions.push_back( cur_pos );
+        } else { //word
+            std::cin.unget();
+            std::cin >> cur_word;
+            ++cur_pos;
+        }
+    }
+
+    while( true ) {
+        while( std::cin.get( ch ) && ( ( ch == ' ' ) || ( ch == '\t' ) ) );
+        if( std::cin.eof() ) {
+            break;
+        } else if ( !std::cin ) {
+            std::cerr << "error reading\n";
+            exit( 1 );
+        } else if( ch == '\n' ) {
+            line_positions.push_back( cur_pos );
+        } else { //word
+            std::cin.unget();
+            std::cin >> cur_word;
+
+            tree.forward( cur_state, cur_word, pattern_found );
+// 1 2 3
+// 1 0 0 0 1 2 3 4 5
+// 0 1 2 3 4 5 6 7 8
+            while( pattern_found.found ) {
+                for( auto i : pattern_found.cur_solution->number ) {
+                    entries[ i ].push_back(
+                        cur_pos - pattern_found.cur_solution->length + 1 );
+                }
+                if( pattern_found.cur_solution->number.front() == 0 ) {
+                    pattern_pos.push_back(
+                        get_entry( pattern_pos.back().line, line_positions,
+                                   cur_pos - first_jokers
+                                   - pattern_found.cur_solution->length + 1 )
+                    );
+
+// ? ? ? 1 2 3
+// 1 0 0 0 1 2 3 4 5
+// 0 1 2 3 4 5 6 7 8
+                }
+                tree.other_solution( pattern_found );
+            }
+            ++cur_pos;
+        }
+    }
+    line_positions.push_back( cur_pos );
+
+    if( tree.only_jokers() ) {
+        if( first_jokers == 0 ) return 0;
+        PositionType left = 0,
+            right = line_positions.back() - first_jokers + 1;
+// ? ? ?
+        PositionType cur_on_line = 0;
+        PositionType right_on_line = *( line_positions.begin() + 1 ) -
+            *line_positions.begin();
+        PositionType cur_line = 0;
+        while( left < right ) {
+            if( cur_on_line < right_on_line ) {
+                std::cout << cur_line + 1
+                          << ", " << cur_on_line + 1 << '\n';
+                ++cur_on_line;
+                ++left;
+            } else {
+                ++cur_line;
+                right_on_line = line_positions[ cur_line + 1 ] -
+                    line_positions[ cur_line ];
+// 1 2 3 \n 0 1 2 3 4 \n 0 1
+                cur_on_line = 0;
+            }
+        }
+    } else {
+        if( tree.patterns_count == 0 ) return 0;
+        pattern_pos.erase( pattern_pos.begin() ); //for algorithm
+        std::vector< PositionType > cur_positions( tree.patterns_count, 0 );
+        bool out_of_patterns = false, success = false;
+        if( entries.empty() ) {
+            out_of_patterns = true;
+        } else {
+            for( auto& entry : entries ) {
+                if( entry.empty() ) {
+                    out_of_patterns = true;
+                    break;
+                }
+            }
+        }
+        while( !out_of_patterns ) {
+            if( entries[ tree.patterns_count - 1 ].size() == 0 ) {
+                out_of_patterns = true;
+            } else if( entries[ tree.patterns_count - 1 ].back() +
+                       tree.add_pos[ tree.patterns_count - 1 ] - 1
+                       >= line_positions.back() ) {
+                entries[ tree.patterns_count - 1 ].pop_back();
+            } else {
+                break;
+            }
+        }
+        // 1 2 ? ? ?
+        // 1 2 3 4
+        // 0 1 2 3 4
+        if( tree.patterns_count == 1 ) {
+            for( PositionType i = 0; i < entries[ 0 ].size(); ++i ) {
+                 std::cout << pattern_pos[ i ].line + 1
+                           << ',' << ' ' << pattern_pos[ i ].position + 1 << '\n';
+            }
+            out_of_patterns = true;
+        }
+        while( !out_of_patterns ) { // error somewhere here
+            success = true;
+            for( CountType pattern_num = 0; pattern_num < tree.patterns_count - 1; ) {
+                int result = result_f( entries, pattern_num, cur_positions, tree );
+                if( result > 0 ) { // right is fewer than it should be, I should shift right
+                    CountType next_pattern = pattern_num + 1;
+                    while( ( ++cur_positions[ next_pattern ] < entries[ next_pattern ].size() ) &&
+                           ( result_f( entries, pattern_num, cur_positions, tree ) > 0 ) );
+                    if( cur_positions[ next_pattern ] >= entries[ next_pattern ].size() ) {
+                        out_of_patterns = true;
+                        success = false;
+                        break;
+                    } else {
+                        continue;
+                    }
+                } else if( result < 0 ) { // right is bigger than it should be, I should shift left
+                    while( ( ++cur_positions[ pattern_num ] < entries[ pattern_num ].size() ) &&
+                           ( result_f( entries, pattern_num, cur_positions, tree ) < 0 ) );
+                    if( cur_positions[ pattern_num ] >= entries[ pattern_num ].size() ) {
+                        out_of_patterns = true;
+                    }
+                    success = false;
+                    break;
+                }
+                ++pattern_num;
+            }
+            if( success ) {
+                std::cout << pattern_pos[ cur_positions[ 0 ] ].line + 1
+                          << ", " << pattern_pos[ cur_positions[ 0 ] ].position + 1 << '\n';
+                ++cur_positions[ 0 ];
+                if( cur_positions[ 0 ] >= entries[ 0 ].size() ) {
+                    out_of_patterns = true;
+                }
+            }
+        }
+    }
+    return 0;
+}
+int result_f( const std::vector< std::vector< PositionType > >& entries,
+              CountType pattern_num, std::vector< PositionType >& cur_positions,
+              AKTry& tree ){
+    return entries[ pattern_num ][ cur_positions[ pattern_num ] ]
+        + tree.add_pos[ pattern_num ]
+        -  entries[ pattern_num + 1 ][ cur_positions[ pattern_num + 1 ] ];
+}
+// 1 2 3 ? ? ?
+// 0 0 0 1 2 3 4 5 6
+AKTry::Entry get_entry( PositionType first_left_edge,
+                        const std::vector< PositionType >& line_pos,
+                        PositionType position ) {
+    PositionType left_edge = first_left_edge,
+        right_edge = line_pos.size() - 1, middle;
+
+    int comparison;
+    AKTry::Entry find_this( 0, 0 );
+    while( true ) {
+        middle = ( right_edge + left_edge ) / 2;
+        comparison = position - line_pos[ middle ];
+        if( comparison != 0 ) {
+            if( comparison > 0 ) {
+                if( ( middle == line_pos.size() - 1 )
+                    || ( position < line_pos[ middle + 1 ] ) ) {
+                    find_this.line = middle;
+                    break;
+                }
+                left_edge = middle + 1;
+            } else if( comparison < 0 ) {
+                if( ( middle == first_left_edge )
+                    || ( position > line_pos[ --middle ] ) ) {
+                    find_this.line = middle;
+                    break;
+                }
+                right_edge = middle; // I reduce by 1 in -4 lines
+            }
+        } else {
+            find_this.line = middle;
+            break;
+        }
+    }
+    while( ( find_this.line < line_pos.size() - 1 ) &&
+           ( line_pos[ find_this.line ] == line_pos[ find_this.line + 1 ] ) ) {
+        ++find_this.line;
+    }
+    find_this.position = position - line_pos[ find_this.line ];
+    return find_this;
+}
+
+
+
+\end{lstlisting}
+
+
+\section{Консоль}
+\begin{alltt}
+
+steep@gg:~/education/instit/da/4lab$ ./main.bin <<< "1 ? 02
+0001
+1
+02
+2
+"
+1, 1
+2, 1
+
+\end{alltt}
+\pagebreak
+

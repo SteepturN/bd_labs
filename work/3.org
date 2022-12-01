@@ -1,5 +1,9 @@
-#+title: с использованием групповых (агрегирующих) функций
+#+title: С использованием групповых (агрегирующих) функций
+#+latex_header: \usepackage[utf8x]{inputenc}
+#+latex_header: \usepackage[T2A]{fontenc}
+#+latex_header: \usepackage[russian,english]{babel}
 
+#+latex: \input{/home/steep/education/instit/bd/labs/work/5.org}
 1. Назначение запроса: найти максимальную цену заказа
 #+BEGIN_SRC sql
 
@@ -72,4 +76,5 @@ select count(*) as `standart rooms count` from `Room` where `Class` = 'standart'
 +----------------------+
 1 row in set
 Time: 0.012s
+
 #+END_SRC

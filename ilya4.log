@@ -1,4 +1,4 @@
-СКАЛЯРНОЕ ВЫРАЖЕНИЕ с ВЫБРАННЫМИ ПОЛЯМИ
+1.    СКАЛЯРНОЕ ВЫРАЖЕНИЕ с ВЫБРАННЫМИ ПОЛЯМИ
 
 mysql root@(none):labs> select `DateInfo`,order_id,person_id, `Price`/60 as `Pri
                         ce in $` from `HotelOrder`                              
@@ -28,7 +28,7 @@ mysql root@(none):labs> select `DateInfo`,order_id,person_id, `Price`/60 as `Pri
 +------------+----------+-----------+------------+
 
 
-ПОМЕЩЕНИЕ ТЕКСТА В ВАШЕМ ВЫВОДЕ ЗАПРОСА
+2.    ПОМЕЩЕНИЕ ТЕКСТА В ВАШЕМ ВЫВОДЕ ЗАПРОСА
 
 mysql root@(none):labs> select `Full_name`, `Age`, '||', `Sex` from `People`    
 +-------------------+-----+----+----------------+
@@ -57,7 +57,7 @@ mysql root@(none):labs> select `Full_name`, `Age`, '||', `Sex` from `People`
 +-------------------+-----+----+----------------+
 
 
-КОЛИЧЕСТВО КОМНАТ НА КАЖДОМ ЭТАЖЕ
+3.    КОЛИЧЕСТВО КОМНАТ НА КАЖДОМ ЭТАЖЕ
 mysql root@(none):labs> select 'For', `Floor`,'Floor', 'there are', count(room_id), 'rooms' from `Room
                         ` group by `Floor`                                                            
 +-----+-------+-------+-----------+----------------+-------+

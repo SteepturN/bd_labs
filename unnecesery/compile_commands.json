@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/steep/education/instit/bd/labs/build",
+  "command": "/usr/bin/c++    -Wall -pedantic -o CMakeFiles/main.dir/redo.cpp.o -c /home/steep/education/instit/bd/labs/redo.cpp",
+  "file": "/home/steep/education/instit/bd/labs/redo.cpp"
+}
+]

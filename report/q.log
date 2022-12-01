@@ -1,0 +1,11 @@
+This is LuaTeX, Version 1.14.0 (TeX Live 2022/dev/Debian)  (format=luatex 2022.10.8)  19 NOV 2022 15:24
+ restricted system commands enabled.
+**q
+(/usr/share/texlive/texmf-dist/tex/latex/tools/q.tex File ignored
+)
+! Emergency stop.
+<*> q
+  
+*** (job aborted, no legal \end found)
+
+!  ==> Fatal error occurred, no output PDF file produced!

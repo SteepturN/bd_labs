@@ -1,0 +1,1142 @@
+\section{ С использованием групповых (агрегирующих) функций 
+}
+
+\begin{enumerate}
+\item Назначение запроса: найти максимальную цену заказа
+\begin{verbatim}
+
+select MAX(`Price`) from `HotelOrder`
++--------------+
+| MAX(`Price`) |
++--------------+
+| 479318       |
++--------------+
+1 row in set
+Time: 0.068s
+
+\end{verbatim}
+\item Назначение запроса: найти полученные деньги по 
+результатами данных заказов
+
+\begin{verbatim}
+select sum(`Price`) from `HotelOrder`
++--------------+
+| sum(`Price`) |
++--------------+
+| 5385716      |
++--------------+
+1 row in set
+Time: 0.015s
+
+\end{verbatim}
+\item Назначение запроса: найти среднюю стоимость заказа
+
+\begin{verbatim}
+select avg(`Price`) as `avg price` from `HotelOrder`
++-------------+
+| avg price   |
++-------------+
+| 269285.8000 |
++-------------+
+1 row in set
+Time: 0.008s
+\end{verbatim}
+\item Назначение запроса: найти количество vip номеров
+
+\begin{verbatim}
+
+select count(*) as `vip rooms count` from `Room` where 
+`Class` = 'vip'
++-----------------+
+| vip rooms count |
++-----------------+
+| 1               |
++-----------------+
+1 row in set
+Time: 0.017s
+\end{verbatim}
+\item Назначение запроса: найти количество standart номеров
+
+\begin{verbatim}
+
+select count(*) as `standart rooms count` from `Room` where 
+`Class` = 'standart'
++----------------------+
+| standart rooms count |
++----------------------+
+| 9                    |
++----------------------+
+1 row in set
+Time: 0.012s
+\end{verbatim}
+\end{enumerate}
+\section{ С использованием нескольких таблиц }
+
+\begin{enumerate}
+\item Назначение запроса: получить список людей, которые 
+заказывали vip номера со стоимостью их заказов
+
+\begin{verbatim}
+
+select `People`.`Full_name` as 'vip', `HotelOrder`.`Price` 
+as 'vip price'
+from (`People` inner join
+(`HotelOrder` inner join ( select `Room`.room_id from `Room` 
+where `Class` = 'vip' ) as Room
+on `HotelOrder`.room_id = `Room`.room_id )
+on `People`.person_id = `HotelOrder`.person_id);
++--------------+-----------+
+| vip          | vip price |
++--------------+-----------+
+| Даниил Куджо | 479318    |
++--------------+-----------+
+1 row in set
+Time: 0.019s
+
+\end{verbatim}
+\item Назначение запроса: получить таблицу людей с их 
+пасспортом и id их заказа, даже если они не совершали 
+заказов
+
+\begin{verbatim}
+select `People`.`Full_name` as 'person', 
+`People`.`passport`, `HotelOrder`.`order_id` as 'order_id'
+from `People` left join `HotelOrder` on `People`.person_id = 
+`HotelOrder`.person_id;
++-------------------+------------+----------+
+| person            | passport   | order_id |
++-------------------+------------+----------+
+| Мива Макинами     | 7818478233 | 9        |
+| Кира Мухаммед     | 2702162558 | 16       |
+| Синдзи Почитта    | 1713007159 | <null>   |
+| Джолин Лайт       | 5955587707 | <null>   |
+| Джорно Йошикаге   | 3604628488 | <null>   |
+| Жоржи Мухаммед    | 7434294503 | 8        |
+| Жоржи Мухаммед    | 7434294503 | 12       |
+| Жоржи Мухаммед    | 7434294503 | 17       |
+| Даниил Куджо      | 1217562659 | 7        |
+| Даниил Куджо      | 1217562659 | 13       |
+| Даниил Куджо      | 1217562659 | 15       |
+| Фэй Джостар       | 8359314123 | 5        |
+| Фэй Джостар       | 8359314123 | 18       |
+| Роуз Геноза       | 3218876729 | 2        |
+| Джозеф Джостар    | 5720607731 | <null>   |
+| Илья Лайт         | 9773355810 | <null>   |
+| Константин Амане  | 2616906135 | <null>   |
+| Дива Агацума      | 8467356710 | 11       |
+| Дива Агацума      | 8467356710 | 19       |
+| Джонатан Макинами | 1640823282 | 3        |
+| Джонатан Почитта  | 2403008459 | <null>   |
+| Роуз Ленгли       | 7478332364 | 6        |
+| Роуз Ленгли       | 7478332364 | 20       |
+| Джолин Агацума    | 4593159892 | 1        |
+| Дива Почитта      | 1529276322 | 4        |
+| Илья Амане        | 4097248329 | <null>   |
+| Джонатан Ленгли   | 7076427086 | 10       |
+| Джонатан Ленгли   | 7076427086 | 14       |
++-------------------+------------+----------+
+28 rows in set
+Time: 0.022s
+
+\end{verbatim}
+\item Назначение запроса: получить таблицу людей с их 
+пасспортом и id их заказа, при том что они не совершали 
+заказов
+
+\begin{verbatim}
+
+select `People`.`Full_name` as 'person', 
+`People`.`passport`, `HotelOrder`.`order_id` as 'order_id'
+from `People` left join `HotelOrder` on `People`.person_id = 
+`HotelOrder`.person_id where `order_id` <=> null;
++------------------+------------+----------+
+| person           | passport   | order_id |
++------------------+------------+----------+
+| Синдзи Почитта   | 1713007159 | <null>   |
+| Джолин Лайт      | 5955587707 | <null>   |
+| Джорно Йошикаге  | 3604628488 | <null>   |
+| Джозеф Джостар   | 5720607731 | <null>   |
+| Илья Лайт        | 9773355810 | <null>   |
+| Константин Амане | 2616906135 | <null>   |
+| Джонатан Почитта | 2403008459 | <null>   |
+| Илья Амане       | 4097248329 | <null>   |
++------------------+------------+----------+
+8 rows in set
+Time: 0.013s
+
+\end{verbatim}
+\item Назначение запроса: получить таблицу с номерами и 
+ценой, за которую их покупали
+
+\begin{verbatim}
+
+select `Room`.`Floor`, `Room`.`Number`, `HotelOrder`.`Price` 
+from `Room` right join
+`HotelOrder` on `Room`.room_id = `HotelOrder`.room_id order 
+by `Floor`, `Number`;
++-------+--------+--------+
+| Floor | Number | Price  |
++-------+--------+--------+
+| 1     | 1      | 467315 |
+| 1     | 3      | 198893 |
+| 1     | 3      | 356811 |
+| 1     | 4      | 364377 |
+| 1     | 4      | 14165  |
+| 2     | 3      | 4371   |
+| 2     | 4      | 467683 |
+| 2     | 5      | 278408 |
+| 3     | 1      | 479318 |
+| 3     | 2      | 348189 |
+| 3     | 3      | 288016 |
+| 4     | 1      | 451559 |
+| 4     | 2      | 186019 |
+| 4     | 3      | 456358 |
+| 4     | 4      | 212341 |
+| 5     | 1      | 451308 |
+| 5     | 1      | 66062  |
+| 5     | 1      | 13165  |
+| 6     | 1      | 208037 |
+| 6     | 1      | 73321  |
++-------+--------+--------+
+20 rows in set
+Time: 0.016s
+
+\end{verbatim}
+\item Назначение запроса: получить таблицу со всеми номерами 
+и ценой, за которую их покупали, если номер не покупали, то 
+null
+
+\begin{verbatim}
+
+select `Room`.`Floor`, `Room`.`Number`, `HotelOrder`.`Price` 
+from `Room` left join `HotelOrder` on `Room`.room_id = 
+`HotelOrder`.room_id order by `Floor`, `Number`;
++-------+--------+--------+
+| Floor | Number | Price  |
++-------+--------+--------+
+| 1     | 1      | 467315 |
+| 1     | 2      | <null> |
+| 1     | 3      | 198893 |
+| 1     | 3      | 356811 |
+| 1     | 4      | 14165  |
+| 1     | 4      | 364377 |
+| 2     | 1      | <null> |
+| 2     | 2      | <null> |
+| 2     | 3      | 4371   |
+| 2     | 4      | 467683 |
+| 2     | 5      | 278408 |
+| 3     | 1      | 479318 |
+| 3     | 2      | 348189 |
+| 3     | 3      | 288016 |
+| 3     | 4      | <null> |
+| 3     | 5      | <null> |
+| 4     | 1      | 451559 |
+| 4     | 2      | 186019 |
+| 4     | 3      | 456358 |
+| 4     | 4      | 212341 |
+| 5     | 1      | 66062  |
+| 5     | 1      | 451308 |
+| 5     | 1      | 13165  |
+| 6     | 1      | 208037 |
+| 6     | 1      | 73321  |
++-------+--------+--------+
+25 rows in set
+Time: 0.013s
+Connecting to socket /var/run/mysqld/mysqld.sock, owned by 
+user mysql
+
+\end{verbatim}
+\item Назначение запроса: получить таблицу с людьми и 
+номерами, которые они покупали
+
+\begin{verbatim}
+select p.`Full_name`, r.`Number`, r.`Floor`, r.`Class` from 
+`People` p
+inner join
+(`HotelOrder` h inner join `Room` r on h.room_id = 
+r.room_id)
+on p.person_id = h.person_id order by p.`Full_name`, 
+r.`Floor`, r.`Number`;
++-------------------+--------+-------+----------+
+| Full_name         | Number | Floor | Class    |
++-------------------+--------+-------+----------+
+| Даниил Куджо      | 5      | 2     | half vip |
+| Даниил Куджо      | 1      | 3     | vip      |
+| Даниил Куджо      | 2      | 4     | half vip |
+| Джолин Агацума    | 1      | 6     | standart |
+| Джонатан Ленгли   | 3      | 1     | half vip |
+| Джонатан Ленгли   | 3      | 4     | half vip |
+| Джонатан Макинами | 2      | 3     | half vip |
+| Дива Агацума      | 1      | 4     | standart |
+| Дива Агацума      | 1      | 6     | standart |
+| Дива Почитта      | 1      | 5     | standart |
+| Жоржи Мухаммед    | 4      | 1     | standart |
+| Жоржи Мухаммед    | 4      | 4     | standart |
+| Жоржи Мухаммед    | 1      | 5     | standart |
+| Кира Мухаммед     | 4      | 2     | half vip |
+| Мива Макинами     | 3      | 2     | half vip |
+| Роуз Геноза       | 1      | 1     | standart |
+| Роуз Ленгли       | 3      | 3     | half vip |
+| Роуз Ленгли       | 1      | 5     | standart |
+| Фэй Джостар       | 3      | 1     | half vip |
+| Фэй Джостар       | 4      | 1     | standart |
++-------------------+--------+-------+----------+
+20 rows in set
+Time: 0.201s
+
+
+\end{verbatim}
+\end{enumerate}
+\section{ С использованием вложенных запросов }
+
+\begin{enumerate}
+\item Назначение запроса: таблица с людьми младше 18 лет, 
+купившими номер, и потраченные ими деньги на номер
+
+\begin{verbatim}
+
+select p.`Full_name`, h.`Price` from `People` p inner join 
+`HotelOrder` h using (person_id)
+where p.`Full_name` in ( select `People`.`Full_name` from 
+`People` where `Age` < 18 );
++-------------+--------+
+| Full_name   | Price  |
++-------------+--------+
+| Роуз Ленгли | 288016 |
+| Роуз Ленгли | 13165  |
++-------------+--------+
+2 rows in set
+Time: 0.020s
+
+\end{verbatim}
+\item Назначение запроса: таблица с заказами со стоимостью 
+больше средней
+
+\begin{verbatim}
+
+select * from `HotelOrder` where `Price` > (select avg( 
+`Price` ) from `HotelOrder`);
++------------+--------+-------+-----------+---------+-------
+---+
+| DateInfo   | Price  | Stars | person_id | room_id | 
+order_id |
++------------+--------+-------+-----------+---------+-------
+---+
+| 2001-06-22 | 467315 | 1     | 9         | 1       | 2      
+|
+| 1975-08-11 | 348189 | 3     | 14        | 11      | 3      
+|
+| 2005-12-02 | 288016 | 5     | 16        | 12      | 6      
+|
+| 1997-03-21 | 356811 | 3     | 20        | 3       | 10     
+|
+| 2012-07-21 | 451559 | 5     | 13        | 15      | 11     
+|
+| 1987-09-20 | 451308 | 4     | 6         | 19      | 12     
+|
+| 2007-03-14 | 278408 | 0     | 7         | 9       | 13     
+|
+| 1982-05-01 | 456358 | 4     | 20        | 17      | 14     
+|
+| 1992-01-13 | 479318 | 2     | 7         | 10      | 15     
+|
+| 1982-05-13 | 467683 | 5     | 2         | 8       | 16     
+|
+| 2014-12-07 | 364377 | 4     | 8         | 4       | 18     
+|
++------------+--------+-------+-----------+---------+-------
+---+
+11 rows in set
+Time: 0.015s
+
+\end{verbatim}
+\item Назначение запроса: таблица с людьми старше 18 лет, 
+купившими номер
+
+\begin{verbatim}
+
+select `People`.`Full_name` as 'people with age > 18'
+from ( select * from `People` where `Age` > 18 ) as People;
++----------------------+
+| people with age > 18 |
++----------------------+
+| Мива Макинами        |
+| Кира Мухаммед        |
+| Синдзи Почитта       |
+| Джолин Лайт          |
+| Жоржи Мухаммед       |
+| Даниил Куджо         |
+| Фэй Джостар          |
+| Роуз Геноза          |
+| Илья Лайт            |
+| Константин Амане     |
+| Дива Агацума         |
+| Джонатан Макинами    |
+| Джолин Агацума       |
+| Дива Почитта         |
+| Илья Амане           |
+| Джонатан Ленгли      |
++----------------------+
+16 rows in set
+Time: 0.037s
+
+\end{verbatim}
+\item Назначение запроса: таблица с людьми и со всеми их 
+заказами, ценой, и оценкой
+
+\begin{verbatim}
+
+select `Full_name`,
+(select group_concat(concat(r.`Floor`, ':', r.`Number`,
+' - ', r.`Class`, ' - ', h.`Price`, ' - rating = ', 
+h.`Stars`, '\n')
+order by r.Floor, r.`Number`, r.`Class`, h.`Price` separator 
+'')
+from `HotelOrder` h inner join `Room` r
+using(room_id)
+where h.person_id = p.person_id group by person_id) as 
+`orders`
+from `People` p
+order by p.`Full_name`;
++-------------------+--------------------------------------+
+| Full_name         | orders                               |
++===================+======================================+
+| Даниил Куджо      | 2:5 - half vip - 278408 - rating = 0 |
+|                   | 3:1 - vip - 479318 - rating = 2      |
+|                   | 4:2 - half vip - 186019 - rating = 4 |
++-------------------+--------------------------------------+
+| Джозеф Джостар    | <null>                               |
++-------------------+--------------------------------------+
+| Джолин Агацума    | 6:1 - standart - 208037 - rating = 0 |
++-------------------+--------------------------------------+
+| Джолин Лайт       | <null>                               |
++-------------------+--------------------------------------+
+| Джонатан Ленгли   | 1:3 - half vip - 356811 - rating = 3 |
+|                   | 4:3 - half vip - 456358 - rating = 4 |
++-------------------+--------------------------------------+
+| Джонатан Макинами | 3:2 - half vip - 348189 - rating = 3 |
++-------------------+--------------------------------------+
+| Джонатан Почитта  | <null>                               |
++-------------------+--------------------------------------+
+| Джорно Йошикаге   | <null>                               |
++-------------------+--------------------------------------+
+| Дива Агацума      | 4:1 - standart - 451559 - rating = 5 |
+|                   | 6:1 - standart - 73321 - rating = 0  |
++-------------------+--------------------------------------+
+| Дива Почитта      | 5:1 - standart - 66062 - rating = 1  |
++-------------------+--------------------------------------+
+| Жоржи Мухаммед    | 1:4 - standart - 14165 - rating = 3  |
+|                   | 4:4 - standart - 212341 - rating = 1 |
+|                   | 5:1 - standart - 451308 - rating = 4 |
++-------------------+--------------------------------------+
+| Илья Амане        | <null>                               |
++-------------------+--------------------------------------+
+| Илья Лайт         | <null>                               |
++-------------------+--------------------------------------+
+| Кира Мухаммед     | 2:4 - half vip - 467683 - rating = 5 |
++-------------------+--------------------------------------+
+| Константин Амане  | <null>                               |
++-------------------+--------------------------------------+
+| Мива Макинами     | 2:3 - half vip - 4371 - rating = 3   |
++-------------------+--------------------------------------+
+| Роуз Геноза       | 1:1 - standart - 467315 - rating = 1 |
++-------------------+--------------------------------------+
+| Роуз Ленгли       | 3:3 - half vip - 288016 - rating = 5 |
+|                   | 5:1 - standart - 13165 - rating = 2  |
++-------------------+--------------------------------------+
+| Синдзи Почитта    | <null>                               |
++-------------------+--------------------------------------+
+| Фэй Джостар       | 1:3 - half vip - 198893 - rating = 4 |
+|                   | 1:4 - standart - 364377 - rating = 4 |
++-------------------+--------------------------------------+
+20 rows in set
+Time: 0.068s
+
+\end{verbatim}
+\item Назначение запроса: таблица с датами прибывания в 
+гостинице определённого человека
+
+\begin{verbatim}
+
+select 'Фей Джостар' as `name`, h.`DateInfo` from 
+`HotelOrder` h where h.person_id =
+(select person_id from `People` where `Full_name` = 'Фэй 
+Джостар');
++-------------+------------+
+| name        | DateInfo   |
++=============+============+
+| Фей Джостар | 2007-08-24 |
++-------------+------------+
+| Фей Джостар | 2014-12-07 |
++-------------+------------+
+2 rows in set
+Time: 0.011s
+
+\end{verbatim}
+\end{enumerate}
+\section{ С использованием операторов EXIST, ANY, ALL, SOME 
+}
+
+\begin{enumerate}
+\item Назначение запроса: таблица с людьми, которые покупали 
+номер
+
+\begin{verbatim}
+
+select `People`.`Full_name` from `People` where exists( 
+select * from `HotelOrder` where `HotelOrder`.person_id = 
+`People`.person_id );
++-------------------+
+| Full_name         |
++-------------------+
+| Мива Макинами     |
+| Кира Мухаммед     |
+| Жоржи Мухаммед    |
+| Даниил Куджо      |
+| Фэй Джостар       |
+| Роуз Геноза       |
+| Дива Агацума      |
+| Джонатан Макинами |
+| Роуз Ленгли       |
+| Джолин Агацума    |
+| Дива Почитта      |
+| Джонатан Ленгли   |
++-------------------+
+12 rows in set
+Time: 0.022s
+
+\end{verbatim}
+\item Назначение запроса: таблица с людьми, которые не 
+покупали ничего, но находятся в базе данных
+
+\begin{verbatim}
+
+select `People`.`Full_name` from `People` where not exists( 
+select * from `HotelOrder` where `HotelOrder`.person_id = 
+`People`.person_id );
++------------------+
+| Full_name        |
++------------------+
+| Синдзи Почитта   |
+| Джолин Лайт      |
+| Джорно Йошикаге  |
+| Джозеф Джостар   |
+| Илья Лайт        |
+| Константин Амане |
+| Джонатан Почитта |
+| Илья Амане       |
++------------------+
+8 rows in set
+Time: 0.010s
+
+\end{verbatim}
+\item Назначение запроса: таблица с людьми, которые покупали 
+half vip или vip номер
+
+\begin{verbatim}
+
+select `People`.`Full_name` from `People` where
+exists(select * from `HotelOrder` where
+`HotelOrder`.person_id = `People`.person_id and
+exists(select * from `Room` where `Room`.room_id = 
+`HotelOrder`.room_id
+and (`Room`.`Class` = 'vip' or `Room`.`Class` = 'half vip' ) 
+) );
++-------------------+
+| Full_name         |
++-------------------+
+| Мива Макинами     |
+| Кира Мухаммед     |
+| Даниил Куджо      |
+| Фэй Джостар       |
+| Джонатан Макинами |
+| Роуз Ленгли       |
+| Джонатан Ленгли   |
++-------------------+
+7 rows in set
+Time: 0.020s
+
+\end{verbatim}
+\item Назначение запроса: таблица с людьми, которые купили 
+хотя бы один номер и все номера, которые они купили являются 
+standart номерами
+
+\begin{verbatim}
+
+select `People`.`Full_name` from `People` where
+'standart' = all( select r.`Class` from ( select * from 
+`HotelOrder` where 
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+and 
+
+exists(select r.`Class` from ( select * from `HotelOrder` 
+where
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+order by `Full_name`;
++----------------+
+| Full_name      |
++----------------+
+| Джолин Агацума |
+| Дива Агацума   |
+| Дива Почитта   |
+| Жоржи Мухаммед |
+| Роуз Геноза    |
++----------------+
+5 rows in set
+Time: 0.021s
+
+\end{verbatim}
+\item Назначение запроса: таблица с людьми, которые купили 
+хотя бы один номер и один номер, который они купили является 
+vip номером
+
+\begin{verbatim}
+
+select `People`.`Full_name` from `People` where
+'vip' = any( select r.`Class` from ( select * from 
+`HotelOrder` where 
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+and 
+
+exists(select r.`Class` from ( select * from `HotelOrder` 
+where
+`HotelOrder`.person_id = `People`.person_id ) as h 
+left join `Room` r on h.room_id = r.room_id )
+
+order by `Full_name`;
++--------------+
+| Full_name    |
++--------------+
+| Даниил Куджо |
++--------------+
+1 row in set
+Time: 0.013s
+
+\end{verbatim}
+\item Назначение запроса: таблица с номерами, которые были 
+куплены когда-либо
+
+\begin{verbatim}
+
+select `Room`.`Floor`, `Room`.`Number` from `Room` 
+where room_id = any( select `HotelOrder`.room_id from 
+`HotelOrder`);
++-------+--------+
+| Floor | Number |
++-------+--------+
+| 1     | 1      |
+| 1     | 3      |
+| 1     | 4      |
+| 2     | 3      |
+| 2     | 4      |
+| 2     | 5      |
+| 3     | 1      |
+| 3     | 2      |
+| 3     | 3      |
+| 4     | 1      |
+| 4     | 2      |
+| 4     | 3      |
+| 4     | 4      |
+| 5     | 1      |
+| 6     | 1      |
++-------+--------+
+15 rows in set
+Time: 0.012s
+
+\end{verbatim}
+\item Назначение запроса: таблица с номерами, которые 
+никогда не были куплены
+
+\begin{verbatim}
+
+select `Room`.`Floor`, `Room`.`Number` from `Room` 
+where not room_id = any( select `HotelOrder`.room_id from 
+`HotelOrder`);
++-------+--------+
+| Floor | Number |
++-------+--------+
+| 1     | 2      |
+| 2     | 1      |
+| 2     | 2      |
+| 3     | 4      |
+| 3     | 5      |
++-------+--------+
+5 rows in set
+Time: 0.010s
+
+quit;
+Goodbye!
+
+\end{verbatim}
+\end{enumerate}
+\section{ С использованием оператора GROUP BY }
+
+\begin{enumerate}
+\item Назначение запроса: таблица количества комнат на 
+каждом этаже
+
+\begin{verbatim}
+
+select `Floor`, COUNT(*) as `number of rooms` from `Room` 
+group by `Floor`;
++-------+-----------------+
+| Floor | number of rooms |
++-------+-----------------+
+| 1     | 4               |
+| 2     | 5               |
+| 3     | 5               |
+| 4     | 4               |
+| 5     | 1               |
+| 6     | 1               |
++-------+-----------------+
+6 rows in set
+Time: 0.028s
+
+\end{verbatim}
+\item Назначение запроса: для каждого возраста получить 
+количество людей этого возраста
+
+\begin{verbatim}
+
+select `People`.`Age`, count(*) from `People` group by 
+`People`.`Age` order by `Age`;
++-----+----------+
+| Age | count(*) |
++-----+----------+
+| 1   | 1        |
+| 4   | 1        |
+| 8   | 1        |
+| 10  | 1        |
+| 20  | 1        |
+| 22  | 1        |
+| 28  | 1        |
+| 42  | 1        |
+| 47  | 2        |
+| 56  | 1        |
+| 62  | 1        |
+| 64  | 1        |
+| 65  | 1        |
+| 66  | 1        |
+| 75  | 1        |
+| 79  | 1        |
+| 86  | 1        |
+| 90  | 1        |
+| 91  | 1        |
++-----+----------+
+19 rows in set
+Time: 0.015s
+
+\end{verbatim}
+\item Назначение запроса: для каждого класса номера получить 
+его среднюю стоимость покупки
+
+\begin{verbatim}
+
+select r.`Class`, avg(h.`Price`) as `avg price` from
+`HotelOrder` h inner join `Room` r using(room_id)
+group by r.`Class`;
++----------+-------------+
+| Class    | avg price   |
++----------+-------------+
+| standart | 232165.0000 |
+| half vip | 287194.2222 |
+| vip      | 479318.0000 |
++----------+-------------+
+3 rows in set
+Time: 0.017s
+
+\end{verbatim}
+\item Назначение запроса: найти сколько в отеле есть номеров 
+различной вместимости
+
+\begin{verbatim}
+
+select `Room`.`Capacity`, count( `Capacity` ) from `Room` 
+group by `Room`.`Capacity` order by `Capacity`
++----------+---------------------+
+| Capacity | count( `Capacity` ) |
++----------+---------------------+
+| 1        | 5                   |
+| 2        | 5                   |
+| 3        | 5                   |
+| 4        | 5                   |
++----------+---------------------+
+4 rows in set
+Time: 0.019s
+\end{verbatim}
+\item Назначение запроса: таблица людей с потраченной ими 
+суммой на заказы
+
+\begin{verbatim}
+
+select `People`.`Full_name` as 'name', 
+sum(`HotelOrder`.`Price`) as 'sum'
+from (`People` inner join `HotelOrder`
+on `People`.person_id = `HotelOrder`.person_id) group by 
+`People`.`Full_name`;
+
++-------------------+--------+
+| name              | sum    |
++-------------------+--------+
+| Джолин Агацума    | 208037 |
+| Роуз Геноза       | 467315 |
+| Джонатан Макинами | 348189 |
+| Дива Почитта      | 66062  |
+| Фэй Джостар       | 563270 |
+| Роуз Ленгли       | 301181 |
+| Даниил Куджо      | 943745 |
+| Жоржи Мухаммед    | 677814 |
+| Мива Макинами     | 4371   |
+| Джонатан Ленгли   | 813169 |
+| Дива Агацума      | 524880 |
+| Кира Мухаммед     | 467683 |
++-------------------+--------+
+12 rows in set
+Time: 0.072s
+
+\end{verbatim}
+\item Назначение запроса: таблица всех номеров с их оценками
+
+\begin{verbatim}
+
+select r.`Floor`, r.`Number`, AVG( h.`Stars` ) from
+`Room` r left join `HotelOrder` h on r.room_id = h.room_id
+group by r.`Floor`, r.`Number`
+order by r.`Floor`, r.`Number`;
++-------+--------+------------------+
+| Floor | Number | AVG( h.`Stars` ) |
++-------+--------+------------------+
+| 1     | 1      | 1.0000           |
+| 1     | 2      | <null>           |
+| 1     | 3      | 3.5000           |
+| 1     | 4      | 3.5000           |
+| 2     | 1      | <null>           |
+| 2     | 2      | <null>           |
+| 2     | 3      | 3.0000           |
+| 2     | 4      | 5.0000           |
+| 2     | 5      | 0.0000           |
+| 3     | 1      | 2.0000           |
+| 3     | 2      | 3.0000           |
+| 3     | 3      | 5.0000           |
+| 3     | 4      | <null>           |
+| 3     | 5      | <null>           |
+| 4     | 1      | 5.0000           |
+| 4     | 2      | 4.0000           |
+| 4     | 3      | 4.0000           |
+| 4     | 4      | 1.0000           |
+| 5     | 1      | 2.3333           |
+| 6     | 1      | 0.0000           |
++-------+--------+------------------+
+20 rows in set
+Time: 0.030s
+
+\end{verbatim}
+\end{enumerate}
+\section{ С командами обновления }
+
+\begin{enumerate}
+\item Назначение запроса: создаём временную таблицу tmp с 
+значениями столбцов Full\_name, Age, Passport из таблицы 
+People, увеличиваем возраст всех в таблице в 2 раза
+
+\begin{verbatim}
+
+create temporary table tmp (select `Full_name`, `Age`, 
+`Passport` from `People`);
+Query OK, 20 rows affected
+Time: 0.019s
+
+select * from tmp;
++-------------------+-----+------------+
+| Full_name         | Age | Passport   |
++-------------------+-----+------------+
+| Мива Макинами     | 56  | 7818478233 |
+| Кира Мухаммед     | 90  | 2702162558 |
+| Синдзи Почитта    | 47  | 1713007159 |
+| Джолин Лайт       | 42  | 5955587707 |
+| Джорно Йошикаге   | 4   | 3604628488 |
+| Жоржи Мухаммед    | 47  | 7434294503 |
+| Даниил Куджо      | 22  | 1217562659 |
+| Фэй Джостар       | 28  | 8359314123 |
+| Роуз Геноза       | 86  | 3218876729 |
+| Джозеф Джостар    | 8   | 5720607731 |
+| Илья Лайт         | 64  | 9773355810 |
+| Константин Амане  | 65  | 2616906135 |
+| Дива Агацума      | 79  | 8467356710 |
+| Джонатан Макинами | 62  | 1640823282 |
+| Джонатан Почитта  | 10  | 2403008459 |
+| Роуз Ленгли       | 1   | 7478332364 |
+| Джолин Агацума    | 66  | 4593159892 |
+| Дива Почитта      | 75  | 1529276322 |
+| Илья Амане        | 20  | 4097248329 |
+| Джонатан Ленгли   | 91  | 7076427086 |
++-------------------+-----+------------+
+20 rows in set
+Time: 0.045s
+Your call!
+
+update `tmp` set `Age` = `Age` * 2;
+Query OK, 20 rows affected
+Time: 0.002s
+
+select * from tmp;
++-------------------+-----+------------+
+| Full_name         | Age | Passport   |
++-------------------+-----+------------+
+| Мива Макинами     | 112 | 7818478233 |
+| Кира Мухаммед     | 180 | 2702162558 |
+| Синдзи Почитта    | 94  | 1713007159 |
+| Джолин Лайт       | 84  | 5955587707 |
+| Джорно Йошикаге   | 8   | 3604628488 |
+| Жоржи Мухаммед    | 94  | 7434294503 |
+| Даниил Куджо      | 44  | 1217562659 |
+| Фэй Джостар       | 56  | 8359314123 |
+| Роуз Геноза       | 172 | 3218876729 |
+| Джозеф Джостар    | 16  | 5720607731 |
+| Илья Лайт         | 128 | 9773355810 |
+| Константин Амане  | 130 | 2616906135 |
+| Дива Агацума      | 158 | 8467356710 |
+| Джонатан Макинами | 124 | 1640823282 |
+| Джонатан Почитта  | 20  | 2403008459 |
+| Роуз Ленгли       | 2   | 7478332364 |
+| Джолин Агацума    | 132 | 4593159892 |
+| Дива Почитта      | 150 | 1529276322 |
+| Илья Амане        | 40  | 4097248329 |
+| Джонатан Ленгли   | 182 | 7076427086 |
++-------------------+-----+------------+
+20 rows in set
+Time: 0.045s
+
+\end{verbatim}
+\item Назначение запроса: добавляем столбец email в таблицу 
+tmp
+
+\begin{verbatim}
+
+show columns from tmp;
++-----------+------------------+------+-----+---------+-----
+--+
+| Field     | Type             | Null | Key | Default | 
+Extra |
++-----------+------------------+------+-----+---------+-----
+--+
+| Full_name | char(128)        | NO   |     | <null>  | NULL 
+|
+| Age       | tinyint unsigned | NO   |     | <null>  | NULL 
+|
+| Passport  | char(10)         | NO   |     | <null>  | NULL 
+|
++-----------+------------------+------+-----+---------+-----
+--+
+3 rows in set
+Time: 0.033s
+Your call!
+
+alter table `tmp` add `email` nchar(255) null default( 
+'default@default.ru' );
+Query OK, 20 rows affected
+Time: 0.004s
+
+show columns from tmp;
++-----------+------------------+------+-----+---------------
+-----------------+-------+
+| Field     | Type             | Null | Key | Default        
+| Extra |
++-----------+------------------+------+-----+---------------
+-----------------+-------+
+| Full_name | char(128)        | NO   |     | <null>         
+| NULL  |
+| Age       | tinyint unsigned | NO   |     | <null>         
+| NULL  |
+| Passport  | char(10)         | NO   |     | <null>         
+| NULL  |
+| email     | char(255)        | YES  |     | 
+(_utf8mb3'default@default.ru') | NULL  |
++-----------+------------------+------+-----+---------------
+-----------------+-------+
+4 rows in set
+Time: 0.021s
+\end{verbatim}
+\item Назначение запроса: добавляем ограничение на 
+уникальность паспорта и на вид вводимого email-а, проверяем 
+их, вводя неправильные данные - сначала неправильный email, 
+потом повторяющийся пасспорт
+
+\begin{verbatim}
+alter table `tmp` add constraint UNIQUE(`Passport`)
+Query OK, 20 rows affected
+Time: 0.004s
+Your call!
+
+alter table `tmp` add constraint email check( email regexp 
+'^[a-z0-9A-Z_]*@[a-z0-9A-Z_].[a-z]*')
+Query OK, 20 rows affected
+Time: 0.094s
+
+show columns from tmp;
++-----------+------------------+------+-----+---------------
+-----------------+-------+
+| Field     | Type             | Null | Key | Default        
+| Extra |
++-----------+------------------+------+-----+---------------
+-----------------+-------+
+| Full_name | char(128)        | NO   |     | <null>         
+| NULL  |
+| Age       | tinyint unsigned | NO   |     | <null>         
+| NULL  |
+| Passport  | char(10)         | NO   | PRI | <null>         
+| NULL  |
+| email     | char(255)        | YES  |     | 
+(_utf8mb3'default@default.ru') | NULL  |
++-----------+------------------+------+-----+---------------
+-----------------+-------+
+4 rows in set
+Time: 0.044s
+
+insert into `tmp` values ('Stan Pines', 10, 1111112233, 
+'abc')
+(3819, "Check constraint 'email' is violated.")
+
+insert into `tmp` values ('Stan Pines', 10, 7818478233, 
+'abc@abc.abc')
+(1062, "Duplicate entry '7818478233' for key 
+'tmp.Passport'")
+
+\end{verbatim}
+\item Назначение запроса: удаление ограничения на 
+уникальность пасспорта и добавление новой записи с 
+повторяющимся пвспортом
+
+\begin{verbatim}
+
+alter table tmp drop index `Passport`
+Query OK, 20 rows affected
+Time: 0.004s
+
+insert into `tmp` values ('Stan Pines', 10, 7818478233, 
+'abc@abc.abc')
+Query OK, 1 row affected
+Time: 0.010s
+
+\end{verbatim}
+\item Назначение запроса: удаление столбца Passport из 
+таблицы
+
+\begin{verbatim}
+
+alter table tmp drop column `Passport`;
+Query OK, 21 rows affected
+Time: 0.005s
+
+show columns from tmp;
++-----------+------------------+------+-----+---------------
+-----------------+-------+
+| Field     | Type             | Null | Key | Default        
+| Extra |
++-----------+------------------+------+-----+---------------
+-----------------+-------+
+| Full_name | char(128)        | NO   |     | <null>         
+| NULL  |
+| Age       | tinyint unsigned | NO   |     | <null>         
+| NULL  |
+| email     | char(255)        | YES  |     | 
+(_utf8mb3'default@default.ru') | NULL  |
++-----------+------------------+------+-----+---------------
+-----------------+-------+
+3 rows in set
+Time: 0.023s
+
+\end{verbatim}
+\item Назначение запроса: удаление записей с возрастом 
+сначала < 18, потом > 100
+
+\begin{verbatim}
+select * from tmp;
++-------------------+-----+--------------------+
+| Full_name         | Age | email              |
++-------------------+-----+--------------------+
+| Даниил Куджо      | 44  | default@default.ru |
+| Дива Почитта      | 150 | default@default.ru |
+| Джонатан Макинами | 124 | default@default.ru |
+| Синдзи Почитта    | 94  | default@default.ru |
+| Джонатан Почитта  | 20  | default@default.ru |
+| Константин Амане  | 130 | default@default.ru |
+| Кира Мухаммед     | 180 | default@default.ru |
+| Роуз Геноза       | 172 | default@default.ru |
+| Джорно Йошикаге   | 8   | default@default.ru |
+| Илья Амане        | 40  | default@default.ru |
+| Джолин Агацума    | 132 | default@default.ru |
+| Джозеф Джостар    | 16  | default@default.ru |
+| Джолин Лайт       | 84  | default@default.ru |
+| Джонатан Ленгли   | 182 | default@default.ru |
+| Жоржи Мухаммед    | 94  | default@default.ru |
+| Роуз Ленгли       | 2   | default@default.ru |
+| Мива Макинами     | 112 | default@default.ru |
+| Фэй Джостар       | 56  | default@default.ru |
+| Дива Агацума      | 158 | default@default.ru |
+| Илья Лайт         | 128 | default@default.ru |
+| Stan Pines        | 10  | abc@abc.abc        |
++-------------------+-----+--------------------+
+21 rows in set
+Time: 0.033s
+Your call!
+
+delete from `tmp` where age < 18;
+Query OK, 4 rows affected
+Time: 0.002s
+
+select * from tmp;
++-------------------+-----+--------------------+
+| Full_name         | Age | email              |
++-------------------+-----+--------------------+
+| Даниил Куджо      | 44  | default@default.ru |
+| Дива Почитта      | 150 | default@default.ru |
+| Джонатан Макинами | 124 | default@default.ru |
+| Синдзи Почитта    | 94  | default@default.ru |
+| Джонатан Почитта  | 20  | default@default.ru |
+| Константин Амане  | 130 | default@default.ru |
+| Кира Мухаммед     | 180 | default@default.ru |
+| Роуз Геноза       | 172 | default@default.ru |
+| Илья Амане        | 40  | default@default.ru |
+| Джолин Агацума    | 132 | default@default.ru |
+| Джолин Лайт       | 84  | default@default.ru |
+| Джонатан Ленгли   | 182 | default@default.ru |
+| Жоржи Мухаммед    | 94  | default@default.ru |
+| Мива Макинами     | 112 | default@default.ru |
+| Фэй Джостар       | 56  | default@default.ru |
+| Дива Агацума      | 158 | default@default.ru |
+| Илья Лайт         | 128 | default@default.ru |
++-------------------+-----+--------------------+
+17 rows in set
+Time: 0.024s
+Your call!
+
+delete from `tmp` where age > 100;
+Query OK, 10 rows affected
+Time: 0.002s
+
+select * from tmp;
++------------------+-----+--------------------+
+| Full_name        | Age | email              |
++------------------+-----+--------------------+
+| Даниил Куджо     | 44  | default@default.ru |
+| Синдзи Почитта   | 94  | default@default.ru |
+| Джонатан Почитта | 20  | default@default.ru |
+| Илья Амане       | 40  | default@default.ru |
+| Джолин Лайт      | 84  | default@default.ru |
+| Жоржи Мухаммед   | 94  | default@default.ru |
+| Фэй Джостар      | 56  | default@default.ru |
++------------------+-----+--------------------+
+7 rows in set
+Time: 0.042s
+
+
+\end{verbatim}
+\end{enumerate}
+
