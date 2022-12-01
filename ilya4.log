@@ -1,0 +1,273 @@
+СКАЛЯРНОЕ ВЫРАЖЕНИЕ с ВЫБРАННЫМИ ПОЛЯМИ
+
+mysql root@(none):labs> select `DateInfo`,order_id,person_id, `Price`/60 as `Pri
+                        ce in $` from `HotelOrder`                              
++------------+----------+-----------+------------+
+| DateInfo   | order_id | person_id | Price in $ |
++------------+----------+-----------+------------+
+| 1999-01-26 | 1        | 17        | 3467.2833  |
+| 2001-06-22 | 2        | 9         | 7788.5833  |
+| 1975-08-11 | 3        | 14        | 5803.1500  |
+| 1990-06-22 | 4        | 18        | 1101.0333  |
+| 2007-08-24 | 5        | 8         | 3314.8833  |
+| 2005-12-02 | 6        | 16        | 4800.2667  |
+| 2000-05-29 | 7        | 7         | 3100.3167  |
+| 1993-06-29 | 8        | 6         | 236.0833   |
+| 2005-04-14 | 9        | 1         | 72.8500    |
+| 1997-03-21 | 10       | 20        | 5946.8500  |
+| 2012-07-21 | 11       | 13        | 7525.9833  |
+| 1987-09-20 | 12       | 6         | 7521.8000  |
+| 2007-03-14 | 13       | 7         | 4640.1333  |
+| 1982-05-01 | 14       | 20        | 7605.9667  |
+| 1992-01-13 | 15       | 7         | 7988.6333  |
+| 1982-05-13 | 16       | 2         | 7794.7167  |
+| 1979-04-23 | 17       | 6         | 3539.0167  |
+| 2014-12-07 | 18       | 8         | 6072.9500  |
+| 1989-11-25 | 19       | 13        | 1222.0167  |
+| 2009-02-03 | 20       | 16        | 219.4167   |
++------------+----------+-----------+------------+
+
+
+ПОМЕЩЕНИЕ ТЕКСТА В ВАШЕМ ВЫВОДЕ ЗАПРОСА
+
+mysql root@(none):labs> select `Full_name`, `Age`, '||', `Sex` from `People`    
++-------------------+-----+----+----------------+
+| Full_name         | Age | || | Sex            |
++-------------------+-----+----+----------------+
+| Мива Макинами     | 56  | || | Female         |
+| Кира Мухаммед     | 90  | || | Not known      |
+| Синдзи Почитта    | 47  | || | Not applicable |
+| Джолин Лайт       | 42  | || | Male           |
+| Джорно Йошикаге   | 4   | || | Male           |
+| Жоржи Мухаммед    | 47  | || | Not known      |
+| Даниил Куджо      | 22  | || | Not applicable |
+| Фэй Джостар       | 28  | || | Female         |
+| Роуз Геноза       | 86  | || | Not known      |
+| Джозеф Джостар    | 8   | || | Not known      |
+| Илья Лайт         | 64  | || | Male           |
+| Константин Амане  | 65  | || | Not known      |
+| Дива Агацума      | 79  | || | Female         |
+| Джонатан Макинами | 62  | || | Not known      |
+| Джонатан Почитта  | 10  | || | Not applicable |
+| Роуз Ленгли       | 1   | || | Not known      |
+| Джолин Агацума    | 66  | || | Not known      |
+| Дива Почитта      | 75  | || | Not known      |
+| Илья Амане        | 20  | || | Not known      |
+| Джонатан Ленгли   | 91  | || | Not applicable |
++-------------------+-----+----+----------------+
+
+
+КОЛИЧЕСТВО КОМНАТ НА КАЖДОМ ЭТАЖЕ
+mysql root@(none):labs> select 'For', `Floor`,'Floor', 'there are', count(room_id), 'rooms' from `Room
+                        ` group by `Floor`                                                            
++-----+-------+-------+-----------+----------------+-------+
+| For | Floor | Floor | there are | count(room_id) | rooms |
++-----+-------+-------+-----------+----------------+-------+
+| For | 1     | Floor | there are | 4              | rooms |
+| For | 2     | Floor | there are | 5              | rooms |
+| For | 3     | Floor | there are | 5              | rooms |
+| For | 4     | Floor | there are | 4              | rooms |
+| For | 5     | Floor | there are | 1              | rooms |
+| For | 6     | Floor | there are | 1              | rooms |
++-----+-------+-------+-----------+----------------+-------+
+
+
+
+
+
+ЭТАЖИ НА КОТОРЫХ БОЛЬШЕ 4 КОМНАТ
+mysql root@(none):labs> select 'For', `Floor`,'Floor', 'there are', count(room_id), 'rooms' from `Room
+                        ` group by `Floor` having count(room_id)>4                                    
++-----+-------+-------+-----------+----------------+-------+
+| For | Floor | Floor | there are | count(room_id) | rooms |
++-----+-------+-------+-----------+----------------+-------+
+| For | 2     | Floor | there are | 5              | rooms |
+| For | 3     | Floor | there are | 5              | rooms |
++-----+-------+-------+-----------+----------------+-------+
+
+2 rows in set
+Time: 0.010s
+
+
+Конкатенация столбцов
+
+mysql root@(none):labs> select concat( 'For ', `Floor`,' floor ', 'there are ', count(room_id), ' rooms') as Output
+                         from `Room` group by `Floor` having count(room_id)>4                                      
++-------------------------------+
+| Output                        |
++-------------------------------+
+| For 2 floor there are 5 rooms |
+| For 3 floor there are 5 rooms |
++-------------------------------+ 
+
+
+mysql root@(none):labs> select 'For', `Floor`,'Floor', 'there are', count(room_id), 'rooms' from `Room
+                        ` group by `Floor` where count(room_id)>4    # как видим из этого примера, использовать where вместе с агрегирующими функциями нельзя                                        
+(1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'where count(room_id)>4' at line 1")
+
+
+УПОРЯДОЧЕНИЕ ВЫВОДА ПОЛЕЙ
+
+mysql root@(none):labs> select * from `People` order by Full_name                                     
++-------------------+-----+------------+----------------+-----------+
+| Full_name         | Age | Passport   | Sex            | person_id |
++-------------------+-----+------------+----------------+-----------+
+| Даниил Куджо      | 22  | 1217562659 | Not applicable | 7         |
+| Джозеф Джостар    | 8   | 5720607731 | Not known      | 10        |
+| Джолин Агацума    | 66  | 4593159892 | Not known      | 17        |
+| Джолин Лайт       | 42  | 5955587707 | Male           | 4         |
+| Джонатан Ленгли   | 91  | 7076427086 | Not applicable | 20        |
+| Джонатан Макинами | 62  | 1640823282 | Not known      | 14        |
+| Джонатан Почитта  | 10  | 2403008459 | Not applicable | 15        |
+| Джорно Йошикаге   | 4   | 3604628488 | Male           | 5         |
+| Дива Агацума      | 79  | 8467356710 | Female         | 13        |
+| Дива Почитта      | 75  | 1529276322 | Not known      | 18        |
+| Жоржи Мухаммед    | 47  | 7434294503 | Not known      | 6         |
+| Илья Амане        | 20  | 4097248329 | Not known      | 19        |
+| Илья Лайт         | 64  | 9773355810 | Male           | 11        |
+| Кира Мухаммед     | 90  | 2702162558 | Not known      | 2         |
+| Константин Амане  | 65  | 2616906135 | Not known      | 12        |
+| Мива Макинами     | 56  | 7818478233 | Female         | 1         |
+| Роуз Геноза       | 86  | 3218876729 | Not known      | 9         |
+| Роуз Ленгли       | 1   | 7478332364 | Not known      | 16        |
+| Синдзи Почитта    | 47  | 1713007159 | Not applicable | 3         |
+| Фэй Джостар       | 28  | 8359314123 | Female         | 8         |
++-------------------+-----+------------+----------------+-----------+
+
+УПОРЯДОЧЕНИЕ С ПОМОЩЬЮ МНОГОЧИСЛЕНЫХ СТОЛБЦОВ
+
+mysql root@(none):labs> select * from `Room` order by Floor, Number                                   
++-------+--------+----------+----------+---------+
+| Floor | Number | Class    | Capacity | room_id |
++-------+--------+----------+----------+---------+
+| 1     | 1      | standart | 1        | 1       |
+| 1     | 2      | standart | 1        | 2       |
+| 1     | 3      | half vip | 2        | 3       |
+| 1     | 4      | standart | 4        | 4       |
+| 2     | 1      | half vip | 3        | 5       |
+| 2     | 2      | standart | 2        | 6       |
+| 2     | 3      | half vip | 1        | 7       |
+| 2     | 4      | half vip | 1        | 8       |
+| 2     | 5      | half vip | 3        | 9       |
+| 3     | 1      | vip      | 4        | 10      |
+| 3     | 2      | half vip | 2        | 11      |
+| 3     | 3      | half vip | 1        | 12      |
+| 3     | 4      | half vip | 2        | 13      |
+| 3     | 5      | standart | 3        | 14      |
+| 4     | 1      | standart | 4        | 15      |
+| 4     | 2      | half vip | 3        | 16      |
+| 4     | 3      | half vip | 3        | 17      |
+| 4     | 4      | standart | 4        | 18      |
+| 5     | 1      | standart | 4        | 19      |
+| 6     | 1      | standart | 2        | 20      |
++-------+--------+----------+----------+---------+
+
+
+УПОРЯДОЧИВАНИЕ В ДРУГОМ ПОРЯДКЕ ПО НОМЕРУ СТОЛБЦА
+
+mysql root@(none):labs> select Floor, number from `Room` order by 1, 2 desc                           
++-------+--------+
+| Floor | number |
++-------+--------+
+| 1     | 4      |
+| 1     | 3      |
+| 1     | 2      |
+| 1     | 1      |
+| 2     | 5      |
+| 2     | 4      |
+| 2     | 3      |
+| 2     | 2      |
+| 2     | 1      |
+| 3     | 5      |
+| 3     | 4      |
+| 3     | 3      |
+| 3     | 2      |
+| 3     | 1      |
+| 4     | 4      |
+| 4     | 3      |
+| 4     | 2      |
+| 4     | 1      |
+| 5     | 1      |
+| 6     | 1      |
++-------+--------+
+
+Выбор нужных столбцов и их количества
+
+mysql root@(none):labs> select person_id from `People` limit 5                                                     
++-----------+
+| person_id |
++-----------+
+| 1         |
+| 2         |
+| 3         |
+| 4         |
+| 5         |
++-----------+
+
+5 rows in set
+Time: 0.011s
+mysql root@(none):labs> select person_id from `People` limit 5,5                                                   
++-----------+
+| person_id |
++-----------+
+| 6         |
+| 7         |
+| 8         |
+| 9         |
+| 10        |
++-----------+
+
+
+Имена людей и их количество
+
+mysql root@(none):labs> select Name, count(Name) from (select substring_index(Full_name,' ' ,1) as Name from `Peopl
+                        e`) as Names group by Name order by 2 desc, 1                                              
++------------+-------------+
+| Name       | count(Name) |
++------------+-------------+
+| Джонатан   | 3           |
+| Джолин     | 2           |
+| Дива       | 2           |
+| Илья       | 2           |
+| Роуз       | 2           |
+| Даниил     | 1           |
+| Джозеф     | 1           |
+| Джорно     | 1           |
+| Жоржи      | 1           |
+| Кира       | 1           |
+| Константин | 1           |
+| Мива       | 1           |
+| Синдзи     | 1           |
+| Фэй        | 1           |
++------------+-------------+
+
+Статистика количества заказов по месяцам
+
+mysql root@(none):labs> select person_id, concat(day(`DateInfo`) ,' ', monthname(`DateInfo`)) as 'Date of order' fr
+                        om `HotelOrder` order by month(`DateInfo`)                                                 
++-----------+---------------+
+| person_id | Date of order |
++-----------+---------------+
+| 17        | 26 January    |
+| 7         | 13 January    |
+| 16        | 3 February    |
+| 20        | 21 March      |
+| 7         | 14 March      |
+| 6         | 23 April      |
+| 1         | 14 April      |
+| 2         | 13 May        |
+| 7         | 29 May        |
+| 20        | 1 May         |
+| 9         | 22 June       |
+| 6         | 29 June       |
+| 18        | 22 June       |
+| 13        | 21 July       |
+| 8         | 24 August     |
+| 14        | 11 August     |
+| 6         | 20 September  |
+| 13        | 25 November   |
+| 16        | 2 December    |
+| 8         | 7 December    |
++-----------+---------------+
+
+
