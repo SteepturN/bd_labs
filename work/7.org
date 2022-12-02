@@ -87,7 +87,7 @@ select `Full_name`,
 order by r.Floor, r.`Number`, r.`Class`, h.`Price` separator '')
 from `HotelOrder` h inner join `Room` r
 using(room_id)
-where h.person_id = p.person_id group by person_id) as `orders`
+where h.person_id = p.person_id) as `orders`
 from `People` p
 order by p.`Full_name`;
 +-------------------+--------------------------------------+
